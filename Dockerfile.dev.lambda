@@ -1,0 +1,40 @@
+
+# This stage installs our modules
+# ARGS here
+ARG BLD
+ARG TARGET
+
+FROM ${BLD} AS build
+
+
+# Create app directory
+RUN mkdir -p /usr/local/app
+# Move to the app directory
+WORKDIR /usr/local/app
+COPY package.json ./
+COPY tsconfig.json ./
+COPY .babelrc ./
+
+RUN npm i --force
+
+COPY . .
+
+RUN rm ./src/index.ts
+RUN mv ./lambda.ts ./index.ts
+
+RUN npm run build
+
+# Then we copy over the modules from above onto another image to reduce the size
+FROM public.ecr.aws/lambda/nodejs:20
+# RUN mkdir -p /usr/local/app
+# # Move to the app directory
+# WORKDIR /usr/local/app
+COPY --from=build /usr/local/app/package.json .
+RUN npm install --force --omit=dev
+COPY --from=build /usr/local/app/build .
+COPY . ${LAMBDA_TASK_ROOT}
+CMD [ "index.handler" ]
+
+
+
+# CMD ["sh", "-c", "node src/lambda.js"]
