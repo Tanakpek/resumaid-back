@@ -1,7 +1,7 @@
 // import { PrismaClient } from "@prisma/client";
 import bcrypt, { hash } from "bcrypt";
 import { createUser } from "./types";
-import User  from '@src/models/user/User'
+import User from "@src/utils/applicaid-ts-utils/models/user/User";
 import { CVsController } from "../cv/cv_controller";
 import { PrismaClient } from "@prisma/client";
 export class UsersController {

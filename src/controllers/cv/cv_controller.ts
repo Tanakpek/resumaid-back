@@ -2,7 +2,7 @@
 import bcrypt, { hash } from "bcrypt";
 import { PrismaClient } from "@prisma/client";
 
-import CV  from '@src/models/cv/CV'
+import CV from "@src/utils/applicaid-ts-utils/models/cv/CV";
 export class CVsController {
     private prisma = new PrismaClient();
     constructor(){

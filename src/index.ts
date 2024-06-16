@@ -11,10 +11,10 @@ import mongoose from "mongoose";
 import {checkAuth} from "@src/middleware/check-auth";
 import session from 'express-session' ;
 import dotenv from 'dotenv';
-import CV from "@src/models/cv/CV";
+import CV from '@src/utils/applicaid-ts-utils/models/cv/CV'
 import fs from 'fs';
 import https from 'https';
-import User from "@src/models/user/User";
+import User from '@src/utils/applicaid-ts-utils/models/user/User';
 import cookieParser = require("cookie-parser");
 import { PrismaClient } from "@prisma/client";
 dotenv.config();

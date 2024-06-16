@@ -1,0 +1,3 @@
+[submodule "src/utils/applicaid-ts-utils"]
+	path = src/utils/applicaid-ts-utils
+	url = https://Applicaid@dev.azure.com/Applicaid/Applicaid/_git/applicaid-ts-utils

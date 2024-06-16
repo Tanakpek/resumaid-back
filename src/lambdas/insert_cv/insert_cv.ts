@@ -1,8 +1,9 @@
 import { promisify } from "util";
 const delay = promisify(setTimeout)
-import CV  from '../../models/cv/CV'
+import CV from "@src/utils/applicaid-ts-utils/models/cv/CV";
 import mongoose from "mongoose";
-import User from "../../models/user/User";
+import User from "@src/utils/applicaid-ts-utils/models/user/User";
+
 import dotenv from 'dotenv';
 dotenv.config();
 const handler = async (event:any, context:any) => {
