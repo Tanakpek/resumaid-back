@@ -4,9 +4,9 @@
 ARG BLD
 ARG TARGET
 
-FROM ${BLD} AS build
-
-
+ARG FUNCTION_DIR=./
+FROM node:lts-buster AS build
+ARG FUNCTION_DIR
 # Create app directory
 RUN mkdir -p /usr/local/app
 # Move to the app directory
@@ -15,25 +15,32 @@ COPY package.json ./
 COPY tsconfig.json ./
 COPY .babelrc ./
 
-RUN npm i --force
+RUN npm i
 
 COPY . .
 
 RUN rm ./src/index.ts
-RUN mv ./lambda.ts ./index.ts
+RUN mv ./src/lambda.ts ./index.ts
 
 RUN npm run build
 
 # Then we copy over the modules from above onto another image to reduce the size
-FROM public.ecr.aws/lambda/nodejs:20
-# RUN mkdir -p /usr/local/app
-# # Move to the app directory
-# WORKDIR /usr/local/app
+FROM node:lts-buster AS production
+
+ENV NPM_CONFIG_CACHE=/tmp/.npm
+RUN npm cache clean --force
+ARG FUNCTION_DIR
+RUN mkdir -p ${FUNCTION_DIR}
+WORKDIR ${FUNCTION_DIR}
 COPY --from=build /usr/local/app/package.json .
-RUN npm install --force --omit=dev
+RUN npm install --omit=dev
+RUN apt-get update && apt-get install -y cmake
+RUN npm install aws-lambda-ric
 COPY --from=build /usr/local/app/build .
-COPY . ${LAMBDA_TASK_ROOT}
-CMD [ "index.handler" ]
+
+# COPY . ${LAMBDA_TASK_ROOT}
+ENTRYPOINT ["/usr/local/bin/npx", "aws-lambda-ric"]
+CMD ["index.handler"]
 
 
 

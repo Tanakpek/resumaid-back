@@ -1,0 +1,281 @@
+{
+    "_id": "667db49f25df5cdd69e98870",
+    "name": "Tan Akpek",
+    "family_name": "Akpek",
+    "given_name": "Tan",
+    "bio": "",
+    "email": "akpektan@gmail.com",
+    "password": "$2b$10$/z98qEzPaOZUZqv7y5LTYOIkyTTYMdQGPgqjf5Tdf2EE62W8Ubu7.",
+    "email_verified": false,
+    "cv_uploaded": true,
+    "linkedin": "",
+    "github": "",
+    "personal_website": "",
+    "phone_number": "",
+    "createdAt": "2024-06-27T18:51:11.809Z",
+    "updatedAt": "2024-06-27T18:51:49.524Z",
+    "__v": 0,
+    "cv": {
+        "_id": "667db4c439b867a276ae4c23",
+        "name": "Tan Akpek",
+        "title": "",
+        "education": [
+            {
+                "institution": "Le Wagon",
+                "location": "Barcelona, Spain",
+                "degree": "Full Stack Web Development Bootcamp",
+                "dissertation": null,
+                "thesis": null,
+                "dates": [
+                    "July 2022",
+                    "September 2022"
+                ],
+                "score": null,
+                "classification": null,
+                "gpa": null,
+                "immutable": true,
+                "_id": "667db4c439b867a276ae4c24"
+            }
+        ],
+        "achievements_and_awards": [],
+        "description": "",
+        "projects": {
+            "Clonebook": {
+                "takeaways": [
+                    {
+                        "immutable": true,
+                        "value": "Used docker-compose to define and build multi-container application and deployed on Amazon ECS.",
+                        "_id": "667db4c439b867a276ae4c26"
+                    },
+                    {
+                        "immutable": true,
+                        "value": "Implemented data stores with Redux to centralize state logic on React and Node.",
+                        "_id": "667db4c439b867a276ae4c27"
+                    },
+                    {
+                        "immutable": true,
+                        "value": "Designed and implemented MVC architecture with Node.js backend mapping objects onto MongoDB database with Mongoose.js; Managed secrets with JWTs by encrypting bearer tokens to verify OAuth credentials.",
+                        "_id": "667db4c439b867a276ae4c28"
+                    }
+                ],
+                "immutable": true,
+                "_id": "667db4c439b867a276ae4c25"
+            },
+            "Wearables": {
+                "takeaways": [
+                    {
+                        "immutable": true,
+                        "value": "Coordinated group of three programmers in an agile environment using Trello, Slack and GitHub to deliver a functional product. Wrote product user stories and designed UI wireframe using Figma.",
+                        "_id": "667db4c439b867a276ae4c2a"
+                    },
+                    {
+                        "immutable": true,
+                        "value": "Designed an MVC model and implemented it using Ruby on Rails while making use of APIs of services such as Stripe and MapBox, using AJAX in certain cases where dynamic re-rendering was needed.",
+                        "_id": "667db4c439b867a276ae4c2b"
+                    },
+                    {
+                        "immutable": true,
+                        "value": "Implemented back-end CRUD and non-CRUD features using Active Record ORM and PostgreSQL.",
+                        "_id": "667db4c439b867a276ae4c2c"
+                    },
+                    {
+                        "immutable": true,
+                        "value": "Wrote unit tests and set up a CI/CD pipeline with RSpec and GitHub Actions for Heroku deployments.",
+                        "_id": "667db4c439b867a276ae4c2d"
+                    }
+                ],
+                "immutable": true,
+                "_id": "667db4c439b867a276ae4c29"
+            },
+            "Ether Lottery": {
+                "takeaways": [
+                    {
+                        "immutable": true,
+                        "value": "Self-taught smart contract programming with solidity, developed a contract on remix and deployed smart contract on Göerli testnet using Truffle.",
+                        "_id": "667db4c439b867a276ae4c2f"
+                    },
+                    {
+                        "immutable": true,
+                        "value": "Learned and used the web3.js library to enable users to read and write data to the Ethereum blockchain through the smart contract.",
+                        "_id": "667db4c439b867a276ae4c30"
+                    },
+                    {
+                        "immutable": true,
+                        "value": "Integrated smart contract with the Chainlink oracle service to enable smart contract to make use of non-deterministic processes.",
+                        "_id": "667db4c439b867a276ae4c31"
+                    }
+                ],
+                "immutable": true,
+                "_id": "667db4c439b867a276ae4c2e"
+            }
+        },
+        "volunteer": [{
+            "organization_name": "Code for America",
+            "role": "Volunteer",
+            "dates": [
+                "January 2023",
+                "PRESENT"
+            ],
+            "takeaways": [
+                {
+                    "immutable": true,
+                    "value": "Developed and maintained open-source software for local government projects.",
+                    "_id": "661db4c439b867a276ae4c33"
+                }
+            ],
+            "immutable": true,
+            "_id": "661db4c439b867a276ae4c33"
+        }],
+        "work": {
+            "Beije": [
+                {
+                    "role": "Frontend Developer",
+                    "takeaways": [
+                        {
+                            "immutable": true,
+                            "value": "Worked in Agile environment with 3 other developers to develop features for new website of 30,000+ users by making data-driven decisions informed by metrics such as conversion rates from A/B tests sources from Google Analytics.",
+                            "_id": "667db4c439b867a276ae4c33"
+                        },
+                        {
+                            "immutable": true,
+                            "value": "Developed internal tools such as daily dashboards for KPIs, automated certain workloads for marketing team using third-party webhook management service Zapier.",
+                            "_id": "667db4c439b867a276ae4c34"
+                        },
+                        {
+                            "immutable": true,
+                            "value": "Promoted stronger component lifecycle practices by improving reusability and readability of legacy code.",
+                            "_id": "667db4c439b867a276ae4c35"
+                        },
+                        {
+                            "immutable": true,
+                            "value": "Performed testing and debugging of source code. Wrote more concise and thorough unit-tests while also reducing testing turnaround time by %30.",
+                            "_id": "667db4c439b867a276ae4c36"
+                        }
+                    ],
+                    "dates": [
+                        "September 2022",
+                        "January 2023"
+                    ],
+                    "immutable": true,
+                    "_id": "667db4c439b867a276ae4c32"
+                }
+            ],
+            "Ernst and Young": [
+                {
+                    "role": "Transaction Advisory Services Intern",
+                    "takeaways": [
+                        {
+                            "immutable": true,
+                            "value": "Created cash flow of $344 million real estate project with three other interns dat.",
+                            "_id": "667db4c439b867a276ae4c38"
+                        },
+                        {
+                            "immutable": true,
+                            "value": "Saved project  repayment of $610Kdiscover and incorporat gov subsidies for .",
+                            "_id": "667db4c439b867a276ae4c39"
+                        }
+                    ],
+                    "dates": [
+                        "June 2020",
+                        "August 2020"
+                    ],
+                    "immutable": true,
+                    "_id": "667db4c439b867a276ae4c37"
+                }
+            ]
+        },
+        "skills": [
+            {
+                "immutable": true,
+                "value": "Ruby on Rails",
+                "_id": "667db4c439b867a276ae4c3a"
+            },
+            {
+                "immutable": true,
+                "value": "React.js",
+                "_id": "667db4c439b867a276ae4c3b"
+            },
+            {
+                "immutable": true,
+                "value": "Node.js",
+                "_id": "667db4c439b867a276ae4c3c"
+            },
+            {
+                "immutable": true,
+                "value": "MongoDB",
+                "_id": "667db4c439b867a276ae4c3d"
+            },
+            {
+                "immutable": true,
+                "value": "SQL",
+                "_id": "667db4c439b867a276ae4c3e"
+            },
+            {
+                "immutable": true,
+                "value": "Docker",
+                "_id": "667db4c439b867a276ae4c3f"
+            },
+            {
+                "immutable": true,
+                "value": "Python",
+                "_id": "667db4c439b867a276ae4c40"
+            },
+            {
+                "immutable": true,
+                "value": "HTML/CSS",
+                "_id": "667db4c439b867a276ae4c41"
+            },
+            {
+                "immutable": true,
+                "value": "Git",
+                "_id": "667db4c439b867a276ae4c42"
+            },
+            {
+                "immutable": true,
+                "value": "Solidity",
+                "_id": "667db4c439b867a276ae4c43"
+            },
+            {
+                "immutable": true,
+                "value": "Google Cloud Platform",
+                "_id": "667db4c439b867a276ae4c44"
+            },
+            {
+                "immutable": true,
+                "value": "Ansible",
+                "_id": "667db4c439b867a276ae4c45"
+            }
+        ],
+        "languages": [
+            {
+                "immutable": true,
+                "value": "English",
+                "_id": "667db4c439b867a276ae4c46"
+            },
+            {
+                "immutable": true,
+                "value": "French (Intermediate)",
+                "_id": "667db4c439b867a276ae4c47"
+            },
+            {
+                "immutable": true,
+                "value": "Turkish",
+                "_id": "667db4c439b867a276ae4c48"
+            }
+        ],
+        "professional_certifications": [
+            {
+                "immutable": true,
+                "value": "Google Cloud Associate Cloud Engineer",
+                "_id": "667db4c439b867a276ae4c49"
+            },
+            {
+                "immutable": true,
+                "value": "Certified Solidity Developer",
+                "_id": "667db4c439b867a276ae4c4a"
+            }
+        ],
+        "email": "akpektan@gmail.com",
+        "__v": 0
+    }
+}

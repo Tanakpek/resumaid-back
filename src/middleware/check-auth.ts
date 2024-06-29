@@ -16,22 +16,26 @@ export const checkAuth = (req: any, res: Response, next:any) => {
     // catch(e){
     //     console.log('fuck')
     // }
-    
+
     let token = req?.headers?.authorization?.split(' ')[1]; // Authorization: 'Bearer TOKEN'
     token = req.cookies.token 
     if (!token) {
-      throw new Error('Authentication failed!');
+      throw new Error('Authentication failed!, No Token Provided');
     }
     const decodedToken : string | JwtPayload = jwt.verify(token, process.env.JWT_SECRET as string);
     if(typeof decodedToken === 'string'){
         throw new Error('Authentication failed!');
     }
 
-    req['userData'] = { userId: decodedToken.userId, email: decodedToken.email};
-    console.log(req['userData'])
+    req['userData'] = { userId: decodedToken.id, email: decodedToken.email};
+    // console.log(decodedToken)
+    
     next();
   } catch (err) {
     const error = new HttpError('Authentication failed!', 401);
-    return next(error);
+    console.log(error)
+
+    res.sendStatus(401)
+    return
   }
 };

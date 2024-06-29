@@ -12,6 +12,12 @@ const cvSchema = new mongoose_1.default.Schema({
     trim: true,
     text: true
   },
+  email: {
+    type: String,
+    required: [true, "email is required"],
+    trim: true,
+    unique: true
+  },
   title: {
     type: String,
     trim: true,

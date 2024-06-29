@@ -1,10 +1,11 @@
 import { promisify } from "util";
 const delay = promisify(setTimeout)
-import CV from "@src/utils/applicaid-ts-utils/models/cv/CV";
+import CV from "../../models/cv/CV";
 import mongoose from "mongoose";
-import User from "@src/utils/applicaid-ts-utils/models/user/User";
+import User from "../../models/user/User";
 
 import dotenv from 'dotenv';
+import { makeImmutable } from "../../utils/lambda_helpers";
 dotenv.config();
 const handler = async (event:any, context:any) => {
     console.log('aws lambda handler called');
@@ -18,9 +19,35 @@ const handler = async (event:any, context:any) => {
                 console.log(event)
                 const data = JSON.parse(event);
                 data['user'] = data['user'].split('_cv')[0];
+                
                 data['cv_object']['email'] = data['user']
-                const cv = new CV(data['cv_object']);
-                await cv.save();
+                data['cv_object']['education'].forEach((element: { [key: string]: any }) => {
+                    element['immutable'] = true
+                });
+                data['cv_object']['achievements_and_awards'] = makeImmutable(data['cv_object']['achievements_and_awards'])
+                data['cv_object']['professional_certifications'] = makeImmutable(data['cv_object']['professional_certifications'])
+                data['cv_object']['skills'] = makeImmutable(data['cv_object']['skills'])
+                data['cv_object']['languages'] = makeImmutable(data['cv_object']['languages'])
+                Object.values(data['cv_object']['projects']).forEach((element: { [key: string]: any }) => {
+                    element['immutable'] = true
+                    element['takeaways'] = makeImmutable(element['takeaways'])
+                })
+                Object.values(data['cv_object']['work']).forEach((elements: any[]) => {
+                    elements.forEach((element: { [key: string]: any }) => {
+                        element['immutable'] = true
+                        element['takeaways'] = makeImmutable(element['takeaways'])
+                    })
+                })
+                data['cv_object']['volunteer'].forEach((element: { [key: string]: any }) => {
+                    element['immutable'] = true
+                    element['takeaways'] = makeImmutable(element['takeaways'])
+                })
+                
+                const cv = await CV.create(data['cv_object']);
+                console.log(cv)
+                console.log('good')
+                await User.findOneAndUpdate({email: data['user']}, { $set: {cv: cv._id, cv_uploaded: true }})
+                
 
                 return {
                     statusCode: 200,

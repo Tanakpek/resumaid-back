@@ -25,11 +25,22 @@ router.get('/profile', (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     res.status(500).send('There was an error, please try again later');
   }
 }));
+router.get('/cv', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+  try {
+    console.log(req.session);
+    console.log(req.session.userId);
+    const cv = yield usersController.getCV(req.session.email);
+    return res.status(200).json(cv);
+  }
+  catch (e) {
+    console.log(e);
+    res.status(500).send('There was an error, please try again later');
+  }
+}));
 router.post('/cv_url', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
   try {
     const user = yield usersController.getUser(req.session.userId);
-    console.log('hiyah');
-    const url = yield (0, createS3Folder_1.generateS3PresignedURL)(process.env.AWS_BUCKET_NAME, user.email);
+    const url = yield (0, createS3Folder_1.generateS3PresignedURL)(process.env.AWS_BUCKET_NAME, user.email + '_cv');
     console.log(url);
     return res.status(200).json({ upload_location: url });
   }

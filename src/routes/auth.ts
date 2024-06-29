@@ -9,10 +9,6 @@ import { getGoogleAuthTokens, getGoogleUserInfo } from '@src/utils/services/user
 import { createUser } from '@src/controllers/user/types';
 import { generateS3PresignedURL, createS3Folder } from '@src/utils/services/createS3Folder';
 
-
-
-
-
 dotenv.config();
 const usersController = new UsersController();
 const bucket_name = process.env.AWS_BUCKET_NAME;
@@ -84,12 +80,13 @@ async (req: any, res: Response, next: NextFunction) => {
             if(login){
                 
                 const token = jwt.sign(
-                    {id: login.id, email: login.email},
+                    {id: login.id, email: login.email, name: login.name},
                     process.env.JWT_SECRET as string, 
                     {expiresIn: '1h'}
                 );
                 req.session.userId = login.id;
                 req.session.email = login.email;
+                req.session.name = login.name;
                 await req.session.save();
                 //res.status(200).json({token: token, id: id})
                 res.redirect(`${ORIGIN}/profile`)
@@ -113,13 +110,14 @@ async (req: any, res: Response, next: NextFunction) => {
             if(user_email){
                 await createS3Folder(user.email as string);
                 const token = jwt.sign(
-                    {id: user_email.id, email: user_email.email},
+                    {id: user_email.id, email: user_email.email, name: user_email.name},
                     process.env.JWT_SECRET as string, 
                     {expiresIn: '1h'}
                 );
                 
                 req.session.userId = user_email.id;
                 req.session.email = user_email.email;
+                req.session.name = user_email.name;
                 await req.session.save();
                 res.cookie('token', token, {httpOnly: false, secure: true, sameSite: 'none'}) // double check this
                 res.redirect(`${ORIGIN}/profile`)

@@ -20,13 +20,17 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const check_auth_1 = require("../../src/middleware/check-auth");
 const express_session_1 = __importDefault(require("express-session"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const CV_1 = __importDefault(require("../../src/models/cv/CV"));
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
 const User_1 = __importDefault(require("../../src/models/user/User"));
+const cookieParser = require("cookie-parser");
+const client_1 = require("@prisma/client");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 app.use(express_1.default.json());
+app.use(cookieParser());
 const cors = require('cors');
 app.use(cors({
   origin: `https://${process.env.DOMAIN}`,
@@ -48,10 +52,10 @@ app.use((req, res, next) => {
   next();
 });
 const usersController = new user_controller_1.UsersController();
-app.use('/users', users_1.default);
 app.use('/login', auth_1.loginRoutes);
 app.use('/logout', auth_1.logoutRoutues);
 app.use(check_auth_1.checkAuth);
+app.use('/users', users_1.default);
 process.on('SIGINT', () => __awaiter(void 0, void 0, void 0, function* () {
   process.exit();
 }));
@@ -63,6 +67,11 @@ mongoose_1.default.
 connect(process.env.MONGO_URI).
 then(() => console.log("database connected successfully"));
 const server = https_1.default.createServer(httpsOptions, app).listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
-  yield User_1.default.deleteMany();
+  if (true) {
+    const prisma = new client_1.PrismaClient();
+    yield prisma.user.deleteMany();
+    yield User_1.default.deleteMany();
+    yield CV_1.default.deleteMany();
+  }
   console.log('Server running at ' + port);
 }));

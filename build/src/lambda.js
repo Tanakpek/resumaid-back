@@ -1,4 +1,3 @@
-"use strict";
 var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, generator) {
   function adopt(value) {return value instanceof P ? value : new P(function (resolve) {resolve(value);});}
   return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,18 +7,18 @@ var __awaiter = this && this.__awaiter || function (thisArg, _arguments, P, gene
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv").config();
-const handler = (event, context) => __awaiter(void 0, void 0, void 0, function* () {
+exports.handler = (event) => __awaiter(this, void 0, void 0, function* () {
+  console.log('aws lambda handler called');
   if (!process.env.RUN_PATH) {
-    console.error("RUN_PATH env variable not set");
-    process.exit(1);
+    console.log("RUN_PATH env variable not set");
+    return 500;
   }
   const run_path = process.env.RUN_PATH;
-  const filePath = `./${run_path}`;
+  const filePath = `${run_path}`;
   console.log("Main runtime file path is: ", filePath);
   console.log("Current Directory:", process.cwd());
   const handler = require(filePath).handler;
-  yield handler(event, context);
+  console.log(handler);
+  yield handler(event);
 });
-exports.default = handler;

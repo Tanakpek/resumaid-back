@@ -15,8 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const User_1 = __importDefault(require("../../../../src/models/user/User"));
+const cv_controller_1 = require("../cv/cv_controller");
+const client_1 = require("@prisma/client");
 class UsersController {
   constructor() {
+    this.prisma = new client_1.PrismaClient();
+    this.CVsController = new cv_controller_1.CVsController();
   }
   createUser(user) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -31,6 +35,17 @@ class UsersController {
         const userdata = Object.assign(Object.assign({}, data), { password: hashedPassword });
         let new_user = yield User_1.default.create(userdata);
         new_user = yield new_user.save();
+        try {
+          yield this.prisma.user.create({
+            data: {
+              email: user.email
+            }
+          });
+        }
+        catch (e) {
+          yield User_1.default.deleteOne({ id: new_user.id });
+          console.error(e);
+        }
         return new_user;
       }
       catch (e) {
@@ -71,7 +86,7 @@ class UsersController {
         try {
           const match = yield bcrypt_1.default.compare(password, u.password);
           if (match) {
-            return u.id;
+            return { id: u.id, email: u.email };
           } else
           {
             return false;
@@ -81,6 +96,11 @@ class UsersController {
           return false;
         }
       }
+    });
+  }
+  getCV(email) {
+    return __awaiter(this, void 0, void 0, function* () {
+      return yield this.CVsController.getCV(email);
     });
   }
 }
