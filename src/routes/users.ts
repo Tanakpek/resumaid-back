@@ -150,10 +150,10 @@ router.post('/cv/education',
 )
 
 
-router.delete('/cv/education',
+router.delete('/cv/education/:id',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.updateEducation(req.session.email, req.body)
+            const cv = await usersController.deleteEducation(req.session.email, req.params.id)
             if(typeof cv !== 'number'){
                 return res.status(200).json(cv);
             }else{
@@ -250,10 +250,15 @@ router.post('/cv/volunteer',
 )
 
 
-router.delete('/cv/volunteer',
+router.delete('/cv/volunteer/:id',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            
+            const cv = await usersController.deleteVolunteer(req.session.email, req.params.id)
+            if (typeof cv !== 'number') {
+                return res.status(200).json(cv);
+            } else {
+                res.status(cv).send();
+            }
         } catch (e) {
             console.log(e)
             res.status(500).send('There was an error, please try again later');

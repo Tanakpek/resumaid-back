@@ -15,6 +15,7 @@ import CV from '@src/models/cv/CV'
 import fs from 'fs';
 import https from 'https';
 import User from '@src/models/user/User';
+import { UserDetails } from '@src/models/user/User'
 import cookieParser = require("cookie-parser");
 import { PrismaClient } from "@prisma/client";
 dotenv.config();
@@ -45,10 +46,13 @@ mongoose
     console.log('connected to db')
     await User.deleteMany({})
     await CV.deleteMany({})
+    await UserDetails.deleteMany({})
     await fs.readFile('seed/data/seed_1.json', 'utf8', async (err, data) => {
         const user = JSON.parse(data)
         const cv = user.cv
+        const details = user.details
         await CV.create(cv)
+        await UserDetails.create(details)
         await User.create(JSON.parse(data))
         await mongoose.connection.close()
     })

@@ -2,12 +2,75 @@ import  mongoose, { Document, Model } from "mongoose";
 
 const { ObjectId } = mongoose.Schema;
 
+const userDetailsSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: ObjectId,
+      required: true,
+      default: function () { return new mongoose.Types.ObjectId() },
+    },
+    name: {
+      type: String,
+      required: [true, "full name is required"],
+      trim: true,
+      text: true,
+    },
+    family_name: {
+      type: String,
+      required: [true, "family name is required"],
+      trim: true,
+      text: true,
+    },
+    given_name: {
+      type: String,
+      required: [true, "given name is required"],
+      trim: true,
+      text: true,
+    },
+    bio: {
+      type: String,
+      default: "",
+      trim: true,
+      text: true,
+    },
+    email: {
+      type: String,
+      required: [true, "email is required"],
+      trim: true,
+      unique: true,
+    },
+    linkedin: {
+      type: String,
+      default: "",
+    },
+    github: {
+      type: String,
+      default: "",
+    },
+    personal_website: {
+      type: String,
+      default: "",
+    },
+    phone_number: {
+      type: String,
+      default: "",
+    }
+  },
+  {
+    timestamps: true,
+  }
+);
+userDetailsSchema.virtual('id').get(function () {
+  return this._id.toHexString();
+});
+
+
 const userSchema = new mongoose.Schema(
   {
     
     name: {
       type: String,
-      required: [true, "first name is required"],
+      required: [true, "full name is required"],
       trim: true,
       text: true,
     },
@@ -66,6 +129,11 @@ const userSchema = new mongoose.Schema(
     cv: {
         type: ObjectId,
         ref: "CV"
+    },
+    details: {
+      type: ObjectId,
+      ref: "UserDetails",
+      required: true
     }
   },
   {
@@ -96,4 +164,18 @@ interface UserInterface extends Document  {
     personal_website: string,
     cv: object,
     phone_number: string
+}
+
+export const UserDetails: Model<UserDetailsType> = mongoose.model<UserDetailsType>("UserDetails", userDetailsSchema, 'applicaid_user_details');
+export interface UserDetailsType extends UserDetailsInterface, Document { }
+interface UserDetailsInterface extends Document {
+  name: string,
+  family_name: string,
+  given_name: string,
+  bio: string,
+  email: string,
+  linkedin: string,
+  github: string,
+  personal_website: string,
+  phone_number: string
 }

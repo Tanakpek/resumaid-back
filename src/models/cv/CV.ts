@@ -4,7 +4,8 @@ const { Schema } = mongoose;
 
 const TakeawaySchema = new Schema({
     immutable: { type: Boolean, default: true },
-    value: { type: String, required: true }
+    value: { type: String, required: true },
+    in: { type: Boolean, required: true ,default: true }
 });
 
 const EducationSchema = new Schema({
@@ -20,12 +21,21 @@ const EducationSchema = new Schema({
     immutable: { type: Boolean, default: true }
 });
 
+EducationSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+
 const VolunteerSchema = new Schema({
     organization_name: { type: String, required: true },
     role: { type: String, required: true },
     takeaways: [TakeawaySchema],
     dates: [String],
+    on: { type: Boolean, required: true, default: true},
     immutable: { type: Boolean, default: true }
+});
+
+VolunteerSchema.virtual('id').get(function () {
+    return this._id.toHexString();
 });
 
 const WorkItemSchema = new Schema({
@@ -33,13 +43,14 @@ const WorkItemSchema = new Schema({
     role: { type: String, required: true },
     takeaways: [TakeawaySchema],
     dates: [String],
+    on: { type: Boolean, required: true, default: true },
     immutable: { type: Boolean, default: true }
-    
 });
 
 const ProjectSchema = new Schema({
     takeaways: [TakeawaySchema],
-    immutable: { type: Boolean, default: true }
+    immutable: { type: Boolean, default: true },
+    on: { type: Boolean, required: true, default: true },
 });
 
 const SkillSchema = new Schema({

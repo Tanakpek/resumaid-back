@@ -139,7 +139,7 @@ export class UsersController {
         }
         try{
             const cv: typeof CV = user.cv
-            cv.education = cv.education.filter((ed: Education) => ed._id !== id)
+            cv.education = cv.education.filter((ed: Education) => ed._id.toString() !== id)
             const cv_new = await cv.save()
             return cv_new
         }catch(e){
@@ -248,7 +248,13 @@ export class UsersController {
         }
         try {
             const cv: typeof CV = user.cv;
-            cv.projects = cv.projects.filter((project: typeof CV['projects']) => project._id !== id)
+            const newProjects = cv.projects
+            for (const [key, project] of newProjects.entries()) {
+                if(project._id.toString() === id){
+                    newProjects.delete(key)
+                    break
+                }
+            }
             const cv_new = await cv.save()
             return cv_new
         } catch (e) {
@@ -271,6 +277,7 @@ export class UsersController {
                         role: org.role,
                         startDate: org.startDate,
                         dates: org.startDate && org.endDate ? [org.startDate, org.endDate] : [org.startDate],
+                        takeaways: org.takeaways
                     }
                 })
                 cv.volunteer = orgs
@@ -289,7 +296,10 @@ export class UsersController {
             return 404
         }
         try {
-
+            const cv: typeof CV = user.cv
+            cv.volunteer = cv.volunteer.filter((vol: typeof CV['volunteer']) => vol._id.toString() !== id)
+            const cv_new = await cv.save()
+            return cv_new
         } catch (e) {
             console.error(e)
             return 500

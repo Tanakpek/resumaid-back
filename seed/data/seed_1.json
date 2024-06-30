@@ -14,6 +14,18 @@
     "phone_number": "",
     "createdAt": "2024-06-27T18:51:11.809Z",
     "updatedAt": "2024-06-27T18:51:49.524Z",
+    "details": {
+        "_id": "667db49f25df5cdd69e98871",
+        "name": "Tan Akpek",
+        "family_name": "Akpek",
+        "given_name": "Tan",
+        "bio": "",
+        "phone_number": "",
+        "personal_website": "",
+        "linkedin": "",
+        "github": "",
+        "email": "akpektan@gmail.com"
+    },
     "__v": 0,
     "cv": {
         "_id": "667db4c439b867a276ae4c23",
@@ -111,6 +123,7 @@
         },
         "volunteer": [{
             "organization_name": "Code for America",
+            "_id": "661db4c439b867a276ae4c31",
             "role": "Volunteer",
             "dates": [
                 "January 2023",
@@ -123,8 +136,7 @@
                     "_id": "661db4c439b867a276ae4c33"
                 }
             ],
-            "immutable": true,
-            "_id": "661db4c439b867a276ae4c33"
+            "immutable": true
         }],
         "work": {
             "Beije": [
