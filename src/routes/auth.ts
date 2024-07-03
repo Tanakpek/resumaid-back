@@ -98,7 +98,10 @@ async (req: any, res: Response, next: NextFunction) => {
                 given_name: user_info?.data.given_name,
                 family_name: user_info?.data.family_name,
                 password: user_info?.data.id, // not secure
-                cv_uploaded: false
+                cv_uploaded: false,
+                details: {
+                    
+                }
             }
             
             if(!user_info?.data.verified_email){
@@ -128,7 +131,7 @@ async (req: any, res: Response, next: NextFunction) => {
     }catch(e){
         console.log('oauth login fuckup')
         console.log(e)
-        return res.redirect(`${ORIGIN}/login`)
+        return res.redirect(`${ORIGIN}/auth`)
     }
     res.status(200).send('ok');
 

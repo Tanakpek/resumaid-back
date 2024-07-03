@@ -55,7 +55,7 @@ const usersController = new UsersController();
 
 app.use('/login', loginRoutes);
 app.use('/logout', logoutRoutues)
-// app.use(checkAuth);
+app.use(checkAuth);
 app.use('/users', UserRoutes);
 
 process.on('SIGINT', async () => {
@@ -75,10 +75,10 @@ const httpsOptions = {
 const server = https.createServer(httpsOptions, app).listen(port, async () => {
     // await client.user.deleteMany();
     if(true){
-        // const prisma = new PrismaClient();
-        // await prisma.user.deleteMany();
-        // await User.deleteMany()
-        // await CV.deleteMany();
+        const prisma = new PrismaClient();
+        await prisma.user.deleteMany();
+        await User.deleteMany()
+        await CV.deleteMany();
     }
     console.log('Server running at ' + port)
 })

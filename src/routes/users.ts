@@ -20,8 +20,8 @@ async (req: any, res: Response, next: NextFunction) => {
                 return
             }
             
-            const { name, given_name, family_name, email,bio,  cv_uploaded, linkedin, github, personal_website } = user ;
-            const resp = {  name, given_name, bio, family_name, email, cv_uploaded, linkedin, github, personal_website };
+            const { name, given_name, family_name, email, bio,  cv_uploaded, linkedin, github, personal_website, details } = user ;
+            const resp = {  name, given_name, bio, family_name, email, cv_uploaded, linkedin, github, personal_website, details };
             return res.status(200).json(resp);
             
         }catch(e){
@@ -124,7 +124,12 @@ router.post('/cv_url',
 router.post('/details', 
     async (req: any, res: Response, next: NextFunction) => {
         try {
-
+            const user = await usersController.updateDetails(req.session.email, req.body);
+            if (typeof user !== 'number') {
+                return res.status(200).json(user);
+            } else {
+                res.status(user).send();
+            }
         } catch (e) {
             console.log(e)
             res.status(500).send('There was an error, please try again later');

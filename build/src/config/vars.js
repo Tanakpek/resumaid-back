@@ -6,11 +6,11 @@ exports.GOOGLE_OAUTH_CLIENT_ID = '1044586183876-aq7hmksu9aq656lt1hdouhdcmck2k5ov
 exports.GOOGLE_OAUTH_REDIRECT_URI = 'https://127.0.0.1:3000/login/oauth';
 exports.ORIGIN = process.env.ORIGIN || 'https://127.0.0.1:5173';
 const options = {
-  redirect_uri: exports.GOOGLE_OAUTH_REDIRECT_URI,
-  client_id: exports.GOOGLE_OAUTH_CLIENT_ID,
-  response_type: 'code',
-  prompt: 'consent',
-  scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'].join(' ')
+    redirect_uri: exports.GOOGLE_OAUTH_REDIRECT_URI,
+    client_id: exports.GOOGLE_OAUTH_CLIENT_ID,
+    response_type: 'code',
+    prompt: 'consent',
+    scope: ['https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email'].join(' ')
 };
 const qs = new URLSearchParams(options);
 exports.google_oauth_url = `${exports.GOOGLE_OAUTH_ROOT}?${qs.toString()}`;

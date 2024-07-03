@@ -4,11 +4,6 @@ const { ObjectId } = mongoose.Schema;
 
 const userDetailsSchema = new mongoose.Schema(
   {
-    _id: {
-      type: ObjectId,
-      required: true,
-      default: function () { return new mongoose.Types.ObjectId() },
-    },
     name: {
       type: String,
       required: [true, "full name is required"],
@@ -58,11 +53,12 @@ const userDetailsSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    _id: false,
   }
 );
-userDetailsSchema.virtual('id').get(function () {
-  return this._id.toHexString();
-});
+// userDetailsSchema.virtual('id').get(function () {
+//   return this._id.toHexString();
+// });
 
 
 const userSchema = new mongoose.Schema(
@@ -131,9 +127,7 @@ const userSchema = new mongoose.Schema(
         ref: "CV"
     },
     details: {
-      type: ObjectId,
-      ref: "UserDetails",
-      required: true
+      type: userDetailsSchema,
     }
   },
   {
@@ -164,9 +158,10 @@ interface UserInterface extends Document  {
     personal_website: string,
     cv: object,
     phone_number: string
+    details: UserDetailsInterface
 }
 
-export const UserDetails: Model<UserDetailsType> = mongoose.model<UserDetailsType>("UserDetails", userDetailsSchema, 'applicaid_user_details');
+// export const UserDetails: Model<UserDetailsType> = mongoose.model<UserDetailsType>("UserDetails", userDetailsSchema, 'applicaid_user_details');
 export interface UserDetailsType extends UserDetailsInterface, Document { }
 interface UserDetailsInterface extends Document {
   name: string,

@@ -1,130 +1,88 @@
 "use strict";
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
-const { ObjectId } = mongoose_1.default.Schema;
-const cvSchema = new mongoose_1.default.Schema({
-  name: {
-    type: String,
-    required: [true, "name is required"],
-    trim: true,
-    text: true
-  },
-  email: {
-    type: String,
-    required: [true, "email is required"],
-    trim: true,
-    unique: true
-  },
-  title: {
-    type: String,
-    trim: true,
-    text: true
-  },
-  education: [{
-    institution: {
-      type: String,
-      required: [true, "institution is required"],
-      trim: true
-    },
-    location: {
-      type: String,
-      trim: true
-    },
-    degree: {
-      type: String,
-      trim: true
-    },
-    dissertation: {
-      type: String,
-      trim: true
-    },
-    thesis: {
-      type: String,
-      trim: true
-    },
-    dates: {
-      type: [String]
-    },
-    score: {
-      type: String,
-      trim: true
-    },
-    classification: {
-      type: String,
-      trim: true
-    },
-    gpa: {
-      type: Number
-    }
-  }],
-  achievements_and_awards: [{
-    type: String,
-    trim: true
-  }],
-  description: {
-    type: String
-  },
-  projects: {
-    type: Map,
-    of: {
-      takeaways: {
-        type: [String]
-      }
-    }
-  },
-  volunteer: [
-  {
-    organization_name: {
-      type: String,
-      required: [true, "organization name is required"],
-      trim: true
-    },
-    role: {
-      type: String,
-      trim: true
-    },
-    takeaways: {
-      type: [String]
-    },
-    dates: {
-      type: [String]
-    }
-  }],
-
-  work: {
-    type: Map,
-    of: [{
-      role: {
-        type: String,
-        trim: true
-      },
-      dates: {
-        type: [String]
-      },
-      takeaways: {
-        type: [String]
-      }
-    }]
-  },
-  skills: [{
-    type: String,
-    trim: true
-  }],
-  languages: [{
-    type: String,
-    trim: true
-  }],
-  professional_certifications: [{
-    type: String,
-    trim: true
-  }]
-}, {
-  timestamps: true
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const TakeawaySchema = new Schema({
+    immutable: { type: Boolean, default: true },
+    value: { type: String, required: true },
+    in: { type: Boolean, required: true, default: true }
 });
-cvSchema.virtual('id').get(function () {
-  return this._id.toHexString();
+const EducationSchema = new Schema({
+    institution: { type: String, required: true },
+    location: { type: String, required: false },
+    degree: { type: String, required: true },
+    dissertation: { type: String, default: null },
+    thesis: { type: String, default: null },
+    dates: [String],
+    score: { type: String, default: null },
+    classification: { type: String, default: null },
+    gpa: { type: String, default: null },
+    immutable: { type: Boolean, default: true }
 });
-exports.default = mongoose_1.default.model("CV", cvSchema, 'applicaid_cvs');
+EducationSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+const VolunteerSchema = new Schema({
+    organization_name: { type: String, required: true },
+    role: { type: String, required: true },
+    takeaways: [TakeawaySchema],
+    dates: [String],
+    on: { type: Boolean, required: true, default: true },
+    immutable: { type: Boolean, default: true }
+});
+VolunteerSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+const WorkItemSchema = new Schema({
+    company: { type: String, required: false },
+    role: { type: String, required: true },
+    takeaways: [TakeawaySchema],
+    dates: [String],
+    on: { type: Boolean, required: true, default: true },
+    immutable: { type: Boolean, default: true }
+});
+const ProjectSchema = new Schema({
+    takeaways: [TakeawaySchema],
+    immutable: { type: Boolean, default: true },
+    on: { type: Boolean, required: true, default: true },
+});
+const SkillSchema = new Schema({
+    immutable: { type: Boolean, default: true },
+    value: { type: String, required: true }
+});
+const LanguageSchema = new Schema({
+    immutable: { type: Boolean, default: true },
+    value: { type: String, required: true }
+});
+const CertificationSchema = new Schema({
+    immutable: { type: Boolean, default: true },
+    value: { type: String, required: true }
+});
+const AchievementsSchema = new Schema({
+    immutable: { type: Boolean, default: true },
+    value: { type: String, required: true }
+});
+const CVSchema = new Schema({
+    name: { type: String, required: true },
+    title: { type: String, default: '' },
+    education: [EducationSchema],
+    achievements_and_awards: [AchievementsSchema],
+    description: { type: String, default: '' },
+    projects: {
+        type: Map,
+        of: ProjectSchema
+    },
+    volunteer: [VolunteerSchema],
+    work: {
+        type: Map,
+        of: [WorkItemSchema]
+    },
+    skills: [SkillSchema],
+    languages: [LanguageSchema],
+    professional_certifications: [CertificationSchema],
+    email: { type: String, required: true }
+});
+CVSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+exports.default = mongoose.model("CV", CVSchema, 'applicaid_cvs');

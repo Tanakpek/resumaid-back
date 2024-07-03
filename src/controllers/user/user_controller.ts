@@ -4,9 +4,10 @@ import { createUser } from "./types";
 import User, { UserType } from "@src/models/user/User";
 import { CVsController } from "../cv/cv_controller";
 import { PrismaClient } from "@prisma/client";
-import { AchivevementFormValues, CertFormValues, EducationFormValues, LanguageFormValues, ProjectFormValues, SkillFormValues, VolunteerFormValues, WorkFormValues } from "@src/utils/applicaid-ts-utils/cv_form_types";
+import { AchivevementFormValues, CertFormValues, EducationFormValues, LanguageFormValues, ProfileFormValues, ProjectFormValues, SkillFormValues, VolunteerFormValues, WorkFormValues, profileFormSchema } from "@src/utils/applicaid-ts-utils/cv_form_types";
 import CV from "@src/models/cv/CV";
 import { CVInfo, Education, Project, WorkExperience } from "@src/utils/applicaid-ts-utils/cv_type";
+import mongoose from "mongoose";
 
 export class UsersController {
     private prisma = new PrismaClient();
@@ -21,7 +22,13 @@ export class UsersController {
                 email: user.email,
                 name: user.name,
                 given_name: user.given_name,
-                family_name: user.family_name
+                family_name: user.family_name,
+                details: {
+                    email: user.email,
+                    name: user.name,
+                    given_name: user.given_name,
+                    family_name: user.family_name,
+                }
             }
             const userdata = {...data, password: hashedPassword }
             let new_user = await User.create(userdata)
@@ -49,7 +56,7 @@ export class UsersController {
 
     async getUser(id: string): Promise<UserType|false>{
         try{
-            const u =  await User.findById(id)
+            const u =  await User.findById(id).populate('details')
             return u;
         }
         catch(e){
@@ -360,13 +367,22 @@ export class UsersController {
         }
     }
 
-    async updateDetails(email: string, education: EducationFormValues) {
-        const user = await User.findOne({ email: email }).populate('cv')
+    async updateDetails(email: string, data: ProfileFormValues) {
+        const user = await User.findOne({ email: email })
         if (!user) {
             return 404
         }
-        try {
-
+        try {   
+            const deets = user.details
+            if (deets) {
+                profileFormSchema.parse(data)
+                user.details = Object.assign(user.details, data )
+                const details_new = await user.save()
+                const { name, given_name, family_name, email, bio, cv_uploaded, linkedin, github, personal_website, details } = details_new;
+                const resp = { name, given_name, bio, family_name, email, cv_uploaded, linkedin, github, personal_website, details };
+                console.log(resp)
+                return resp
+            }
         } catch (e) {
             console.error(e)
             return 500
