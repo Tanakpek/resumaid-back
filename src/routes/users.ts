@@ -14,7 +14,7 @@ const router = Router();
 router.get('/profile', 
 async (req: any, res: Response, next: NextFunction) => {
         try{
-            const user = await usersController.getUser(req.session.userId);
+            const user = await usersController.getUser(req.userData.userId);
             if(!user){
                 res.status(500).send('User not found');
                 return
@@ -50,7 +50,7 @@ router.post('/', [
                         await usersController.deleteUser(id.id);
                         res.status(500).send('User not created');
                     }
-                    req.session.userId = id;
+                    req.userData.userId = id;
                     console.log('created user')
                     res.status(200)
                 }
@@ -72,8 +72,9 @@ router.post('/', [
 router.get('/cv/scratch/',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const email = req.session.email;
-            const name = req.session.name;
+           
+            const email = req.userData.email;
+            const name = req.userData.name;
             const cv = await usersController.createEmptyCV(email, name);
             if (!cv) {
                 res.status(500).send('CV not created');
@@ -91,12 +92,12 @@ router.get('/cv/scratch/',
 
 // CV Endpoints 
 router.get('/cv',
-    async (req: Request<any>, res: Response, next: NextFunction) => {
+    async (req: any, res: Response, next: NextFunction) => {
         try {
-            // console.log(req.session)
-            // console.log(req.session.userId)
+            // console.log(req.userData)
+            // console.log(req.userData.userId)
             
-            const cv = await usersController.getCV(req.session.email);
+            const cv = await usersController.getCV(req.userData.email);
             return res.status(200).json(cv);
 
         } catch (e) {
@@ -110,7 +111,7 @@ router.get('/cv',
 router.post('/cv_url', 
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const user = await usersController.getUser(req.session.userId);
+            const user = await usersController.getUser(req.userData.userId);
             const url = await generateS3PresignedURL(process.env.AWS_BUCKET_NAME as string, ((user as UserType).email) + '_cv');
             
 
@@ -124,7 +125,7 @@ router.post('/cv_url',
 router.post('/details', 
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const user = await usersController.updateDetails(req.session.email, req.body);
+            const user = await usersController.updateDetails(req.userData.email, req.body);
             if (typeof user !== 'number') {
                 return res.status(200).json(user);
             } else {
@@ -141,7 +142,7 @@ router.post('/details',
 router.post('/cv/education',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.updateEducation(req.session.email, req.body)
+            const cv = await usersController.updateEducation(req.userData.email, req.body)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -158,7 +159,7 @@ router.post('/cv/education',
 router.delete('/cv/education/:id',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.deleteEducation(req.session.email, req.params.id)
+            const cv = await usersController.deleteEducation(req.userData.email, req.params.id)
             if(typeof cv !== 'number'){
                 return res.status(200).json(cv);
             }else{
@@ -175,7 +176,7 @@ router.delete('/cv/education/:id',
 router.post('/cv/work',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.updateWork(req.session.email, req.body)
+            const cv = await usersController.updateWork(req.userData.email, req.body)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -191,7 +192,7 @@ router.post('/cv/work',
 router.delete('/cv/work/:id',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.deleteWork(req.session.email, req.params.id)
+            const cv = await usersController.deleteWork(req.userData.email, req.params.id)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -208,7 +209,7 @@ router.delete('/cv/work/:id',
 router.post('/cv/projects',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.updateProjects(req.session.email, req.body)
+            const cv = await usersController.updateProjects(req.userData.email, req.body)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -224,7 +225,7 @@ router.post('/cv/projects',
 router.delete('/cv/projects/:id',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.deleteProject(req.session.email, req.params.id)
+            const cv = await usersController.deleteProject(req.userData.email, req.params.id)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -241,7 +242,7 @@ router.delete('/cv/projects/:id',
 router.post('/cv/volunteer',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.updateVolunteer(req.session.email, req.body)
+            const cv = await usersController.updateVolunteer(req.userData.email, req.body)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -258,7 +259,7 @@ router.post('/cv/volunteer',
 router.delete('/cv/volunteer/:id',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.deleteVolunteer(req.session.email, req.params.id)
+            const cv = await usersController.deleteVolunteer(req.userData.email, req.params.id)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -275,7 +276,7 @@ router.delete('/cv/volunteer/:id',
 router.post('/cv/achievements',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.updateAchievements(req.session.email, req.body)
+            const cv = await usersController.updateAchievements(req.userData.email, req.body)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -292,7 +293,7 @@ router.post('/cv/achievements',
 router.post('/cv/skills',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.updateSkills(req.session.email, req.body)
+            const cv = await usersController.updateSkills(req.userData.email, req.body)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -309,7 +310,7 @@ router.post('/cv/skills',
 router.post('/cv/certifications',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.updateCertificates(req.session.email, req.body)
+            const cv = await usersController.updateCertificates(req.userData.email, req.body)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -338,7 +339,7 @@ router.post('/cv/description',
 router.post('/cv/languages',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-            const cv = await usersController.updateLanguages(req.session.email, req.body)
+            const cv = await usersController.updateLanguages(req.userData.email, req.body)
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {

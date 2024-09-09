@@ -380,7 +380,6 @@ export class UsersController {
                 const details_new = await user.save()
                 const { name, given_name, family_name, email, bio, cv_uploaded, linkedin, github, personal_website, details } = details_new;
                 const resp = { name, given_name, bio, family_name, email, cv_uploaded, linkedin, github, personal_website, details };
-                console.log(resp)
                 return resp
             }
         } catch (e) {

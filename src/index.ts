@@ -7,6 +7,7 @@ import {check, validationResult} from 'express-validator';
 import jwt from 'jsonwebtoken';
 import UserRoutes from "@src/routes/users";
 import {loginRoutes, logoutRoutues} from "@src/routes/auth";
+import scrapeInstructionsRoutes from "@src/routes/scraping"
 import mongoose from "mongoose";
 import {checkAuth} from "@src/middleware/check-auth";
 import session from 'express-session' ;
@@ -29,26 +30,6 @@ app.use(cors({
     credentials: true,
     methods: 'GET, POST, PATCH, DELETE',
 }));
-app.use(session({
-    secret: process.env.JWT_SECRET as string,
-    resave: false,
-    saveUninitialized: true,
-    cookie: 
-        {
-            httpOnly: true, 
-            secure: true, sameSite: 
-            'none', path: '/',
-            domain: process.env.DOMAIN
-        }
-    ,
-}))
-declare module 'express-session' {
-    interface SessionData {
-        userId: string;
-        email: string;
-        isAdmin?: boolean;
-    }
-}
 
 // const client = new PrismaClient();
 const usersController = new UsersController();
@@ -56,6 +37,7 @@ const usersController = new UsersController();
 app.use('/login', loginRoutes);
 app.use('/logout', logoutRoutues)
 app.use(checkAuth);
+app.use('/scraping', scrapeInstructionsRoutes )
 app.use('/users', UserRoutes);
 
 process.on('SIGINT', async () => {
@@ -64,7 +46,7 @@ process.on('SIGINT', async () => {
 })
 
 const httpsOptions = {
-    key: fs.readFileSync('./src/utils/services/ssl/cert.key'),
+    key: fs.readFileSync('./src/utils/services/ssl/cert.pem'),
     cert: fs.readFileSync('./src/utils/services/ssl/cert.pem')
   }
 
@@ -74,11 +56,11 @@ const httpsOptions = {
 //   .catch((err) => console.log("error connecting to mongodb", err));
 const server = https.createServer(httpsOptions, app).listen(port, async () => {
     // await client.user.deleteMany();
-    if(true){
-        const prisma = new PrismaClient();
-        await prisma.user.deleteMany();
-        await User.deleteMany()
-        await CV.deleteMany();
-    }
+    // if(true){
+    //     const prisma = new PrismaClient();
+    //     await prisma.user.deleteMany();
+    //     await User.deleteMany()
+    //     await CV.deleteMany();
+    // }
     console.log('Server running at ' + port)
 })

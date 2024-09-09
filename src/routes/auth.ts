@@ -50,20 +50,19 @@ async (req: Request, res: Response, next: NextFunction) => {
     const {email, password} = req.body;
     const login = await usersController.loginEmail(email, password);
 
-    if(login){
-        const token = jwt.sign(
-            {id: login},
-            process.env.JWT_SECRET as string, 
-            {expiresIn: '1h'}
-        );
-        console.log('logged  in')
-        res.status(200).json({token: token, id: login});
-    }
-    else{
-        res.status(500).send('Invalid credentials');
-    }
-
-    
+        if(login){
+            const token = jwt.sign(
+                {id: login},
+                process.env.JWT_SECRET as string, 
+                {expiresIn: '1h'}
+            );
+            res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' })
+            console.log('logged  in')
+            res.status(200).json({token: token, id: login});
+        }
+        else{
+            res.status(500).send('Invalid credentials');
+        }
     }
 )
 
@@ -78,17 +77,14 @@ async (req: any, res: Response, next: NextFunction) => {
             const user_info = await getGoogleUserInfo(id_token, access_token)
             const login = await usersController.loginEmail(user_info?.data.email, user_info?.data.id);
             if(login){
-                
                 const token = jwt.sign(
                     {id: login.id, email: login.email, name: login.name},
                     process.env.JWT_SECRET as string, 
                     {expiresIn: '1h'}
                 );
-                req.session.userId = login.id;
-                req.session.email = login.email;
-                req.session.name = login.name;
-                await req.session.save();
+                res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict' })
                 //res.status(200).json({token: token, id: id})
+                res.setHeader('Authorization', `Bearer ${token}`)
                 res.redirect(`${ORIGIN}/profile`)
                 return
             }
@@ -117,12 +113,10 @@ async (req: any, res: Response, next: NextFunction) => {
                     process.env.JWT_SECRET as string, 
                     {expiresIn: '1h'}
                 );
-                
-                req.session.userId = user_email.id;
-                req.session.email = user_email.email;
-                req.session.name = user_email.name;
                 await req.session.save();
-                res.cookie('token', token, {httpOnly: false, secure: true, sameSite: 'none'}) // double check this
+                res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'strict'})
+                res.setHeader('Authorization', `Bearer ${token}`)
+                console.log(res.getHeaders())
                 res.redirect(`${ORIGIN}/profile`)
                 // res.redirect(`${ORIGIN}/profile`)
                 return
@@ -134,7 +128,6 @@ async (req: any, res: Response, next: NextFunction) => {
         return res.redirect(`${ORIGIN}/auth`)
     }
     res.status(200).send('ok');
-
 })
 
 const logout_router = Router();

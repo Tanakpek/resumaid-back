@@ -9,27 +9,30 @@ dotenv.config();
 export const checkAuth = (req: any, res: Response, next:any) => {
   try {
     // console.log('here')
-    // console.log(req.cookies)
-    // try{
-    //   console.log(jwt.decode(req.cookies.token))
-    // }
-    // catch(e){
-    //     console.log('fuck')
-    // }
+    try{
+      const decodedToken: string | JwtPayload = jwt.verify(req.cookies.token, process.env.JWT_SECRET as string);
+      if (typeof decodedToken === 'string') {
+        throw new Error();
+      }
+      req['userData'] = { userId: decodedToken.id, email: decodedToken.email, name: decodedToken.name };
+      return next()
+    }
+    catch(e){
+        console.log('cookie authentication failed')
+    }
 
     let token = req?.headers?.authorization?.split(' ')[1]; // Authorization: 'Bearer TOKEN'
-    token = req.cookies.token 
     if (!token) {
       throw new Error('Authentication failed!, No Token Provided');
     }
     const decodedToken : string | JwtPayload = jwt.verify(token, process.env.JWT_SECRET as string);
+    
     if(typeof decodedToken === 'string'){
         throw new Error('Authentication failed!');
     }
-
-    req['userData'] = { userId: decodedToken.id, email: decodedToken.email};
-    // console.log(decodedToken)
     
+    req['userData'] = { userId: decodedToken.id, email: decodedToken.email, name: decodedToken.name };
+    // console.log(decodedToken)
     next();
   } catch (err) {
     const error = new HttpError('Authentication failed!', 401);

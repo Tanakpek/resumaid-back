@@ -17,7 +17,7 @@ const usersController = new user_controller_1.UsersController();
 const router = (0, express_1.Router)();
 router.get('/profile', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = yield usersController.getUser(req.session.userId);
+        const user = yield usersController.getUser(req.userData.userId);
         if (!user) {
             res.status(500).send('User not found');
             return;
@@ -47,7 +47,7 @@ router.post('/', [
                     yield usersController.deleteUser(id.id);
                     res.status(500).send('User not created');
                 }
-                req.session.userId = id;
+                req.userData.userId = id;
                 console.log('created user');
                 res.status(200);
             }
@@ -65,8 +65,8 @@ router.post('/', [
 }));
 router.get('/cv/scratch/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const email = req.session.email;
-        const name = req.session.name;
+        const email = req.userData.email;
+        const name = req.userData.name;
         const cv = yield usersController.createEmptyCV(email, name);
         if (!cv) {
             res.status(500).send('CV not created');
@@ -81,7 +81,7 @@ router.get('/cv/scratch/', (req, res, next) => __awaiter(void 0, void 0, void 0,
 }));
 router.get('/cv', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.getCV(req.session.email);
+        const cv = yield usersController.getCV(req.userData.email);
         return res.status(200).json(cv);
     }
     catch (e) {
@@ -91,7 +91,7 @@ router.get('/cv', (req, res, next) => __awaiter(void 0, void 0, void 0, function
 }));
 router.post('/cv_url', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = yield usersController.getUser(req.session.userId);
+        const user = yield usersController.getUser(req.userData.userId);
         const url = yield (0, createS3Folder_1.generateS3PresignedURL)(process.env.AWS_BUCKET_NAME, (user.email) + '_cv');
         return res.status(200).json({ upload_location: url });
     }
@@ -101,7 +101,7 @@ router.post('/cv_url', (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 }));
 router.post('/details', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const user = yield usersController.updateDetails(req.session.email, req.body);
+        const user = yield usersController.updateDetails(req.userData.email, req.body);
         if (typeof user !== 'number') {
             return res.status(200).json(user);
         }
@@ -116,7 +116,7 @@ router.post('/details', (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 }));
 router.post('/cv/education', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.updateEducation(req.session.email, req.body);
+        const cv = yield usersController.updateEducation(req.userData.email, req.body);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -131,7 +131,7 @@ router.post('/cv/education', (req, res, next) => __awaiter(void 0, void 0, void 
 }));
 router.delete('/cv/education/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.deleteEducation(req.session.email, req.params.id);
+        const cv = yield usersController.deleteEducation(req.userData.email, req.params.id);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -146,7 +146,7 @@ router.delete('/cv/education/:id', (req, res, next) => __awaiter(void 0, void 0,
 }));
 router.post('/cv/work', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.updateWork(req.session.email, req.body);
+        const cv = yield usersController.updateWork(req.userData.email, req.body);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -161,7 +161,7 @@ router.post('/cv/work', (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 }));
 router.delete('/cv/work/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.deleteWork(req.session.email, req.params.id);
+        const cv = yield usersController.deleteWork(req.userData.email, req.params.id);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -176,7 +176,7 @@ router.delete('/cv/work/:id', (req, res, next) => __awaiter(void 0, void 0, void
 }));
 router.post('/cv/projects', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.updateProjects(req.session.email, req.body);
+        const cv = yield usersController.updateProjects(req.userData.email, req.body);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -191,7 +191,7 @@ router.post('/cv/projects', (req, res, next) => __awaiter(void 0, void 0, void 0
 }));
 router.delete('/cv/projects/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.deleteProject(req.session.email, req.params.id);
+        const cv = yield usersController.deleteProject(req.userData.email, req.params.id);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -206,7 +206,7 @@ router.delete('/cv/projects/:id', (req, res, next) => __awaiter(void 0, void 0, 
 }));
 router.post('/cv/volunteer', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.updateVolunteer(req.session.email, req.body);
+        const cv = yield usersController.updateVolunteer(req.userData.email, req.body);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -221,7 +221,7 @@ router.post('/cv/volunteer', (req, res, next) => __awaiter(void 0, void 0, void 
 }));
 router.delete('/cv/volunteer/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.deleteVolunteer(req.session.email, req.params.id);
+        const cv = yield usersController.deleteVolunteer(req.userData.email, req.params.id);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -236,7 +236,7 @@ router.delete('/cv/volunteer/:id', (req, res, next) => __awaiter(void 0, void 0,
 }));
 router.post('/cv/achievements', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.updateAchievements(req.session.email, req.body);
+        const cv = yield usersController.updateAchievements(req.userData.email, req.body);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -251,7 +251,7 @@ router.post('/cv/achievements', (req, res, next) => __awaiter(void 0, void 0, vo
 }));
 router.post('/cv/skills', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.updateSkills(req.session.email, req.body);
+        const cv = yield usersController.updateSkills(req.userData.email, req.body);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -266,7 +266,7 @@ router.post('/cv/skills', (req, res, next) => __awaiter(void 0, void 0, void 0, 
 }));
 router.post('/cv/certifications', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.updateCertificates(req.session.email, req.body);
+        const cv = yield usersController.updateCertificates(req.userData.email, req.body);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }
@@ -289,7 +289,7 @@ router.post('/cv/description', (req, res, next) => __awaiter(void 0, void 0, voi
 }));
 router.post('/cv/languages', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const cv = yield usersController.updateLanguages(req.session.email, req.body);
+        const cv = yield usersController.updateLanguages(req.userData.email, req.body);
         if (typeof cv !== 'number') {
             return res.status(200).json(cv);
         }

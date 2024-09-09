@@ -1,4 +1,8 @@
-{
+{	
+	"author": {
+		"name": "Tan Akpek"
+	},
+	"license":"GPL-3.0-only",
 	"devDependencies": {
 		"@babel/cli": "^7.22.10",
 		"@faker-js/faker": "^8.4.0",

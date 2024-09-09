@@ -27,13 +27,15 @@ model applications {
 }
 
 model job_boards {
-  id       String @id @db.Uuid
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name     String
   root_url String
 }
 
 model job_scraping_pages {
-  id        String @id @db.Uuid
-  path_url  String
-  job_board String @db.Uuid
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  path_url     String
+  job_board    String @db.Uuid
+  instructions Json  @db.Json
+  job_id_param String
 }

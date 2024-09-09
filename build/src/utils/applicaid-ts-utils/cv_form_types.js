@@ -36,7 +36,7 @@ exports.educationFormSchema = zod_1.z.object({
     education: zod_1.z.array(zod_1.z.object({
         _id: zod_1.z.string().optional(),
         immutable: zod_1.z.boolean(),
-        start: zod_1.z.string().or(zod_1.z.literal("")),
+        start: zod_1.z.string().or(zod_1.z.date()).or(zod_1.z.literal("")),
         end: zod_1.z.string().optional().or(zod_1.z.literal("").or(zod_1.z.literal("PRESENT"))),
         institution: zod_1.z.string(),
         dates: zod_1.z.array(zod_1.z.string()).optional(),
@@ -65,6 +65,20 @@ exports.educationFormSchema = zod_1.z.object({
         }, {
             message: 'Only one field should be filled for education outcome',
         })
+    }).refine(data => {
+        if (data.end === 'PRESENT' && data.start)
+            return true;
+        if (data.start && data.end) {
+            const startDate = new Date(data.start);
+            const endDate = new Date(data.end);
+            return startDate < endDate;
+        }
+        else {
+            return false;
+        }
+    }, {
+        message: 'Start date must be before end date',
+        path: ['endDate']
     })).default([]).optional(),
 });
 exports.languageFormSchema = zod_1.z.object({

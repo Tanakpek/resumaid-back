@@ -11,8 +11,18 @@ dotenv_1.default.config();
 const checkAuth = (req, res, next) => {
     var _a, _b;
     try {
+        try {
+            const decodedToken = jsonwebtoken_1.default.verify(req.cookies.token, process.env.JWT_SECRET);
+            if (typeof decodedToken === 'string') {
+                throw new Error();
+            }
+            req['userData'] = { userId: decodedToken.id, email: decodedToken.email, name: decodedToken.name };
+            return next();
+        }
+        catch (e) {
+            console.log('cookie authentication failed');
+        }
         let token = (_b = (_a = req === null || req === void 0 ? void 0 : req.headers) === null || _a === void 0 ? void 0 : _a.authorization) === null || _b === void 0 ? void 0 : _b.split(' ')[1];
-        token = req.cookies.token;
         if (!token) {
             throw new Error('Authentication failed!, No Token Provided');
         }
@@ -20,7 +30,7 @@ const checkAuth = (req, res, next) => {
         if (typeof decodedToken === 'string') {
             throw new Error('Authentication failed!');
         }
-        req['userData'] = { userId: decodedToken.id, email: decodedToken.email };
+        req['userData'] = { userId: decodedToken.id, email: decodedToken.email, name: decodedToken.name };
         next();
     }
     catch (err) {

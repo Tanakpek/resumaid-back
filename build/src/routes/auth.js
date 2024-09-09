@@ -51,6 +51,7 @@ router.get('/email', (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     const login = yield usersController.loginEmail(email, password);
     if (login) {
         const token = jsonwebtoken_1.default.sign({ id: login }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' });
         console.log('logged  in');
         res.status(200).json({ token: token, id: login });
     }
@@ -66,10 +67,8 @@ router.get('/oauth', (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         const login = yield usersController.loginEmail(user_info === null || user_info === void 0 ? void 0 : user_info.data.email, user_info === null || user_info === void 0 ? void 0 : user_info.data.id);
         if (login) {
             const token = jsonwebtoken_1.default.sign({ id: login.id, email: login.email, name: login.name }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            req.session.userId = login.id;
-            req.session.email = login.email;
-            req.session.name = login.name;
-            yield req.session.save();
+            res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict' });
+            res.setHeader('Authorization', `Bearer ${token}`);
             res.redirect(`${vars_1.ORIGIN}/profile`);
             return;
         }
@@ -90,11 +89,10 @@ router.get('/oauth', (req, res, next) => __awaiter(void 0, void 0, void 0, funct
         if (user_email) {
             yield (0, createS3Folder_1.createS3Folder)(user.email);
             const token = jsonwebtoken_1.default.sign({ id: user_email.id, email: user_email.email, name: user_email.name }, process.env.JWT_SECRET, { expiresIn: '1h' });
-            req.session.userId = user_email.id;
-            req.session.email = user_email.email;
-            req.session.name = user_email.name;
             yield req.session.save();
-            res.cookie('token', token, { httpOnly: false, secure: true, sameSite: 'none' });
+            res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict' });
+            res.setHeader('Authorization', `Bearer ${token}`);
+            console.log(res.getHeaders());
             res.redirect(`${vars_1.ORIGIN}/profile`);
             return;
         }
@@ -102,7 +100,7 @@ router.get('/oauth', (req, res, next) => __awaiter(void 0, void 0, void 0, funct
     catch (e) {
         console.log('oauth login fuckup');
         console.log(e);
-        return res.redirect(`${vars_1.ORIGIN}/login`);
+        return res.redirect(`${vars_1.ORIGIN}/auth`);
     }
     res.status(200).send('ok');
 }));

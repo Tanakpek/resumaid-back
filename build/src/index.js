@@ -16,8 +16,9 @@ const user_controller_1 = require("@src/controllers/user/user_controller");
 const express_1 = __importDefault(require("express"));
 const users_1 = __importDefault(require("@src/routes/users"));
 const auth_1 = require("@src/routes/auth");
+const scraping_1 = __importDefault(require("@src/routes/scraping"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const express_session_1 = __importDefault(require("express-session"));
+const check_auth_1 = require("@src/middleware/check-auth");
 const dotenv_1 = __importDefault(require("dotenv"));
 const fs_1 = __importDefault(require("fs"));
 const https_1 = __importDefault(require("https"));
@@ -33,25 +34,17 @@ app.use(cors({
     credentials: true,
     methods: 'GET, POST, PATCH, DELETE',
 }));
-app.use((0, express_session_1.default)({
-    secret: process.env.JWT_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-        secure: true, sameSite: 'none', path: '/',
-        domain: process.env.DOMAIN
-    },
-}));
 const usersController = new user_controller_1.UsersController();
 app.use('/login', auth_1.loginRoutes);
 app.use('/logout', auth_1.logoutRoutues);
+app.use(check_auth_1.checkAuth);
+app.use('/scraping', scraping_1.default);
 app.use('/users', users_1.default);
 process.on('SIGINT', () => __awaiter(void 0, void 0, void 0, function* () {
     process.exit();
 }));
 const httpsOptions = {
-    key: fs_1.default.readFileSync('./src/utils/services/ssl/cert.key'),
+    key: fs_1.default.readFileSync('./src/utils/services/ssl/cert.pem'),
     cert: fs_1.default.readFileSync('./src/utils/services/ssl/cert.pem')
 };
 mongoose_1.default
