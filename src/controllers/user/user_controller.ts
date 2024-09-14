@@ -37,6 +37,7 @@ export class UsersController {
                 await this.prisma.user.create(
                     {
                         data: {
+                            id: new_user.id,
                             email: user.email,
                         }
                     }
@@ -45,6 +46,7 @@ export class UsersController {
             catch(e){
                 await User.deleteOne({id: new_user.id})
                 console.error(e);
+                return false
             }
             return new_user
         }

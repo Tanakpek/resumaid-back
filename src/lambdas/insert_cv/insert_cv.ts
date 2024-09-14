@@ -6,11 +6,19 @@ import User from "../../models/user/User";
 
 import dotenv from 'dotenv';
 import { makeImmutable } from "../../utils/lambda_helpers";
+import AWS from 'aws-sdk';
 dotenv.config();
 const handler = async (event:any, context:any) => {
-    console.log('aws lambda handler called');
+    AWS.config.update({ region: process.env.AWS_REGION });
+    let ssm = new AWS.SSM();
+
+    const options = {
+        Name: process.env.MONGO_URI, /* required */
+    };
+    const parameter = await ssm.getParameter(options).promise()
+    const MONGO_URI = parameter.Parameter?.Value
     await mongoose
-    .connect(process.env.MONGO_URI as string)
+    .connect( MONGO_URI as string)
     .then(async () => {
             console.log("database connected successfully")
             

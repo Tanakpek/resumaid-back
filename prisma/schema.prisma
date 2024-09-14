@@ -13,29 +13,63 @@ model User {
 }
 
 model applicants {
-  id    String @id @db.Uuid
-  email String
+  email        String
+  id           String         @id
+  subscription String?
+  products     products?      @relation(fields: [subscription], references: [name], onDelete: NoAction, onUpdate: NoAction, map: "memership")
+  applications applications[]
 }
 
 model applications {
-  id             String   @id @db.Uuid
-  dt             DateTime @default(now()) @db.Timestamp(6)
-  applicant      String   @db.Uuid
-  job_board      String   @db.Uuid
-  job_name       String
+  id             String     @id @db.Uuid
+  dt             DateTime   @default(now()) @db.Timestamp(6)
+  job_board      String     @db.Uuid
+  job            String
   recruiter_name String?
+  applicant      String
+  applicants     applicants @relation(fields: [applicant], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "application_applicant_fkey")
+  jobs           jobs       @relation(fields: [job], references: [unique_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model job_boards {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name     String
   root_url String
+  jobs     jobs[]
 }
 
 model job_scraping_pages {
-  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   path_url     String
-  job_board    String @db.Uuid
-  instructions Json  @db.Json
-  job_id_param String
+  job_board    String  @db.Uuid
+  instructions Json?   @db.Json
+  job_id_param String?
+}
+
+model jobs {
+  id             String         @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  job_board      String         @db.Uuid
+  title          String?
+  recruiter_name String?
+  company        String?
+  unique_id      String         @id
+  applications   applications[]
+  job_boards     job_boards     @relation(fields: [job_board], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model products {
+  name             String       @id(map: "memberships_pkey")
+  cv_gen           Boolean
+  cover_letter_gen Boolean
+  stripe_id        String?
+  price            String?
+  applicants       applicants[]
+  prices           prices?      @relation(fields: [price], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sub_pice")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model prices {
+  id       String     @id
+  type     String
+  products products[]
 }

@@ -139,8 +139,7 @@ userSchema.virtual('id').get(function() {
     return this._id.toHexString();
 });
 
-const User: Model<UserType> = mongoose.model<UserType>("User", userSchema, 'applicaid_users');
-export default User
+
 
 export interface UserType extends UserInterface, Document { }
 
@@ -174,3 +173,6 @@ interface UserDetailsInterface extends Document {
   personal_website: string,
   phone_number: string
 }
+
+const User: Model<UserType> = mongoose.model<UserType>("User", userSchema, 'applicaid_users');
+export default User

@@ -17,6 +17,7 @@ import https from 'https';
 import User from '@src/models/user/User';
 import cookieParser = require("cookie-parser");
 import { PrismaClient } from "@prisma/client";
+import { client as stripeClient } from '@src/models/stripe/client'
 dotenv.config();
 
 
@@ -41,6 +42,7 @@ mongoose
     .connect(process.env.MONGO_URI as string)
     .then(async () => {
     console.log('connected to db')
+    
     await User.deleteMany({})
     await CV.deleteMany({})
     await fs.readFile('seed/data/seed_1.json', 'utf8', async (err, data) => {
@@ -48,7 +50,24 @@ mongoose
         let cv = user.cv
         cv = await CV.create(cv)
         user.cv = cv
-        await User.create(user)
+        
+        
+
+        const user_resp = await User.create(user)
+
+        await stripeClient.customers.del(user_resp.id).catch((err) => {
+            console.log(err)
+            console.log('could not delete customer')
+        })
+        const stripe_customer = await stripeClient.customers.create({
+            
+            email: user_resp.email,
+            metadata: {
+                user_id: user_resp.id
+            }
+        })
+        console.log(stripe_customer)
+
         await mongoose.connection.close()
     })
     

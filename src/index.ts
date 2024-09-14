@@ -19,6 +19,9 @@ import User from '@src/models/user/User';
 import cookieParser = require("cookie-parser");
 import { PrismaClient } from "@prisma/client";
 dotenv.config();
+import {client as stripeClient} from '@src/models/stripe/client'
+import { BaseStripeErrorHandler } from "@src/models/stripe/utils/ErrorHandler";
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -62,5 +65,6 @@ const server = https.createServer(httpsOptions, app).listen(port, async () => {
     //     await User.deleteMany()
     //     await CV.deleteMany();
     // }
+   
     console.log('Server running at ' + port)
 })
