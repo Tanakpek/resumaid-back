@@ -7,6 +7,8 @@ import {check, validationResult} from 'express-validator';
 import jwt from 'jsonwebtoken';
 import UserRoutes from "@src/routes/users";
 import {loginRoutes, logoutRoutues} from "@src/routes/auth";
+import { WebhookRouter } from "@src/routes/stripe_webhook";
+import { billingRouter, billingPublicRouter } from "@src/routes/billing";
 import scrapeInstructionsRoutes from "@src/routes/scraping"
 import mongoose from "mongoose";
 import {checkAuth} from "@src/middleware/check-auth";
@@ -25,23 +27,27 @@ import { BaseStripeErrorHandler } from "@src/models/stripe/utils/ErrorHandler";
 
 const app = express();
 const port = process.env.PORT || 3000;
-app.use(express.json());
 app.use(cookieParser())
 const cors = require('cors');
 app.use(cors({
     origin: process.env.ORIGIN,
     credentials: true,
     methods: 'GET, POST, PATCH, DELETE',
+    strict: true
 }));
 
-// const client = new PrismaClient();
-const usersController = new UsersController();
+
+app.use('/webhook', WebhookRouter);
+app.use(express.json());
 
 app.use('/login', loginRoutes);
 app.use('/logout', logoutRoutues)
+app.use('/billing', billingPublicRouter)
 app.use(checkAuth);
+
+app.use('/billing', billingRouter)
 app.use('/scraping', scrapeInstructionsRoutes )
-app.use('/users', UserRoutes);
+app.use('/users', UserRoutes );
 
 process.on('SIGINT', async () => {
     // await client.$disconnect();
@@ -57,6 +63,8 @@ const httpsOptions = {
   .connect(process.env.MONGO_URI as string)
   .then(() => console.log("database connected successfully"))
 //   .catch((err) => console.log("error connecting to mongodb", err));
+
+
 const server = https.createServer(httpsOptions, app).listen(port, async () => {
     // await client.user.deleteMany();
     // if(true){
@@ -65,6 +73,5 @@ const server = https.createServer(httpsOptions, app).listen(port, async () => {
     //     await User.deleteMany()
     //     await CV.deleteMany();
     // }
-   
     console.log('Server running at ' + port)
 })

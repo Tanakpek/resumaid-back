@@ -6,6 +6,8 @@ import { generateS3PresignedURL, createS3Folder } from '@src/utils/services/crea
 import User, { UserType } from '@src/models/user/User';
 import fs from 'fs';
 import CV from '@src/models/cv/CV';
+import { client as stripeClient } from '@src/models/stripe/client';
+import Cookies from 'cookies';
 
 const usersController = new UsersController();
 const router = Router();
@@ -14,14 +16,44 @@ const router = Router();
 router.get('/profile', 
 async (req: any, res: Response, next: NextFunction) => {
         try{
+            
             const user = await usersController.getUser(req.userData.userId);
             if(!user){
                 res.status(500).send('User not found');
                 return
             }
-            
             const { name, given_name, family_name, email, bio,  cv_uploaded, linkedin, github, personal_website, details } = user ;
-            const resp = {  name, given_name, bio, family_name, email, cv_uploaded, linkedin, github, personal_website, details };
+            const resp = {  name, given_name, bio, family_name, email, cv_uploaded, linkedin, github, personal_website, details, plan: req.userData.plan };
+            if (req.query?.stripe_session_id) {
+                console.log(req.query?.stripe_session_id)
+                try {
+                    // console.log('here')
+                    const userData = req['userData'];
+                    console.log(userData)
+                    const login = await usersController.getUserByEmail(userData?.email);
+                    if (login) {
+                        const token = jwt.sign(
+                            {
+                                id: login.id,
+                                email: login.email,
+                                name: login.name,
+                                plan: login.plan || null,
+                                subscription_status: login.subscription_status || null,
+                                billing_id: login.billing_id || null,
+                                // todo get webhook to update user and return plan
+                            },
+                            process.env.JWT_SECRET as string,
+                            { expiresIn: '1h' }
+                        );
+                        console.log(res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' }))
+                    }
+                    else{
+                        console.log('no')
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
+            }
             return res.status(200).json(resp);
             
         }catch(e){
@@ -42,6 +74,7 @@ router.post('/', [
         try{
             if(validationResult(req).isEmpty()){
                 const user = req.body;
+                
                 const newuser = await usersController.createUser(user);
                 if(newuser){
                     const id = newuser;
@@ -72,7 +105,10 @@ router.post('/', [
 router.get('/cv/scratch/',
     async (req: any, res: Response, next: NextFunction) => {
         try {
-           
+            if( !req.userData.plan){
+                res.status(403).send('Start trial to create CV');
+                return
+            }
             const email = req.userData.email;
             const name = req.userData.name;
             const cv = await usersController.createEmptyCV(email, name);
@@ -96,7 +132,10 @@ router.get('/cv',
         try {
             // console.log(req.userData)
             // console.log(req.userData.userId)
-            
+            // if(!req.userData.plan){
+            //     res.status(403).send('Start trial or subscribe to view CV');
+            //     return
+            // }
             const cv = await usersController.getCV(req.userData.email);
             return res.status(200).json(cv);
 
@@ -111,10 +150,12 @@ router.get('/cv',
 router.post('/cv_url', 
     async (req: any, res: Response, next: NextFunction) => {
         try {
+            if(!req.userData.plan){
+                res.status(403).send('Start trial to upload CV');
+                return
+            }
             const user = await usersController.getUser(req.userData.userId);
             const url = await generateS3PresignedURL(process.env.AWS_BUCKET_NAME as string, ((user as UserType).email) + '_cv');
-            
-
             return res.status(200).json({ upload_location: url });
         } catch (e) {
             console.log(e)

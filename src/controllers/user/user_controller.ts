@@ -3,12 +3,13 @@ import bcrypt, { hash } from "bcrypt";
 import { createUser } from "./types";
 import User, { UserType } from "@src/models/user/User";
 import { CVsController } from "../cv/cv_controller";
-import { PrismaClient } from "@prisma/client";
+import { applicants, PrismaClient } from "@prisma/client";
 import { AchivevementFormValues, CertFormValues, EducationFormValues, LanguageFormValues, ProfileFormValues, ProjectFormValues, SkillFormValues, VolunteerFormValues, WorkFormValues, profileFormSchema } from "@src/utils/applicaid-ts-utils/cv_form_types";
 import CV from "@src/models/cv/CV";
 import { CVInfo, Education, Project, WorkExperience } from "@src/utils/applicaid-ts-utils/cv_type";
 import mongoose from "mongoose";
-
+import { client as stripeClient } from "@src/models/stripe/client";
+import { SubscriptionStatus } from "@src/models/stripe/types";
 export class UsersController {
     private prisma = new PrismaClient();
     private CVsController = new CVsController();
@@ -30,15 +31,31 @@ export class UsersController {
                     family_name: user.family_name,
                 }
             }
+            
             const userdata = {...data, password: hashedPassword }
             let new_user = await User.create(userdata)
             new_user = await new_user.save()
+            let stripeCustomer;
             try{
-                await this.prisma.user.create(
+                stripeCustomer = await stripeClient.customers.create({
+                    email: user.email,
+                    metadata: {
+                        user_id: new_user.id
+                    }
+                })
+            }catch(e){
+                console.error(e)
+                await new_user.deleteOne({ id: new_user.id })
+                return false
+            }
+            
+            try{
+                await this.prisma.applicants.create(
                     {
                         data: {
                             id: new_user.id,
                             email: user.email,
+                            stripe_id: stripeCustomer.id, 
                         }
                     }
                 )
@@ -77,21 +94,60 @@ export class UsersController {
     }
 
     async loginEmail(email: string, password: string){
-        const u = await User.findOne({ email: email })
-        if(u === null){
+        const user_app_data = await User.findOne({ email: email })
+        if (user_app_data === null) {
+            return false;
+        }
+        
+        const user_record :  applicants & { plan_name: string | null, subscription_status: SubscriptionStatus | null } = await this.prisma.$queryRaw`
+        SELECT applicants.*, products.stripe_id as plan, subscriptions.status as subscription_status FROM private.applicants 
+        LEFT  JOIN private.subscriptions  ON applicants.subscription = subscriptions.id
+        LEFT JOIN private.products  ON subscriptions.product = products.stripe_id
+		where applicants.email = ${email}
+        `
+    
+        if(!user_record){
             return false;
         }
         else{
             try{
-                const match = await bcrypt.compare(password, u.password);
+                const billing = user_record.stripe_id;
+                const entitlement = user_record.subscription;
+                const match = await bcrypt.compare(password, user_app_data.password);
                 if(match){
-                    return  {id: u.id, email: u.email, name: u.name}
+                    return  {id: user_app_data.id, email: user_app_data.email, name: user_app_data.name, plan: user_record.plan_name, subscription_status: user_record.subscription_status || null, billing_id: user_record.stripe_id }
                 }
                 else{
                     return false;
                 }
             }
             catch(e){
+                return false;
+            }
+        }
+    }
+
+    async getUserByEmail(email: string) {
+        const user_app_data = await User.findOne({ email: email })
+        if (user_app_data === null) {
+            return false;
+        }
+
+        const user_record: applicants & { plan_name: string | null, subscription_status: SubscriptionStatus | null } = await this.prisma.$queryRaw`
+        SELECT applicants.*, products.stripe_id as plan, subscriptions.status as subscription_status FROM private.applicants 
+        LEFT  JOIN private.subscriptions  ON applicants.subscription = subscriptions.id
+        LEFT JOIN private.products  ON subscriptions.product = products.stripe_id
+		where applicants.email = ${email}
+        `
+
+        if (!user_record) {
+            return false;
+        }
+        else {
+            try {
+                return { id: user_app_data.id, email: user_app_data.email, name: user_app_data.name, plan: user_record.plan_name, subscription_status: user_record.subscription_status || null, billing_id: user_record.stripe_id }
+            }
+            catch (e) {
                 return false;
             }
         }

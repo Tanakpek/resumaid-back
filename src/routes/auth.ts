@@ -14,6 +14,7 @@ const usersController = new UsersController();
 const bucket_name = process.env.AWS_BUCKET_NAME;
 const router = Router();
 
+// TODO flesh out cookie fields to match oauth routes for these two email ones
 //login
 router.post('/email', [
     check('email').isEmail(),
@@ -30,8 +31,8 @@ async (req: Request, res: Response, next: NextFunction) => {
                 process.env.JWT_SECRET as string, 
                 {expiresIn: '1h'}
             );
-            console.log('logged  in')
-            res.status(200).json({token: token, id: login});
+            res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' })
+            res.status( 200 );
         }
         else{
             res.status(500).send('Invalid credentials');
@@ -49,7 +50,6 @@ async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.token;
     const {email, password} = req.body;
     const login = await usersController.loginEmail(email, password);
-
         if(login){
             const token = jwt.sign(
                 {id: login},
@@ -57,7 +57,7 @@ async (req: Request, res: Response, next: NextFunction) => {
                 {expiresIn: '1h'}
             );
             res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' })
-            console.log('logged  in')
+            res.setHeader('Authorization', `Bearer ${token}`)
             res.status(200).json({token: token, id: login});
         }
         else{
@@ -71,19 +71,24 @@ async (req: any, res: Response, next: NextFunction) => {
     // get code from qs
     try{
             const code = req.query.code as string
-
             // get token from code
             const { id_token, access_token } = await getGoogleAuthTokens(code)
             const user_info = await getGoogleUserInfo(id_token, access_token)
             const login = await usersController.loginEmail(user_info?.data.email, user_info?.data.id);
             if(login){
                 const token = jwt.sign(
-                    {id: login.id, email: login.email, name: login.name},
+                    { 
+                        id: login.id,
+                        email: login.email, 
+                        name: login.name, 
+                        plan: login.plan || null, 
+                        subscription_status: login.subscription_status || null, 
+                        billing_id: login.billing_id || null 
+                    },
                     process.env.JWT_SECRET as string, 
                     {expiresIn: '1h'}
                 );
                 res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict' })
-                //res.status(200).json({token: token, id: id})
                 res.setHeader('Authorization', `Bearer ${token}`)
                 res.redirect(`${ORIGIN}/profile`)
                 return
@@ -109,16 +114,22 @@ async (req: any, res: Response, next: NextFunction) => {
             if(user_email){
                 await createS3Folder(user.email as string);
                 const token = jwt.sign(
-                    {id: user_email.id, email: user_email.email, name: user_email.name},
+                    {
+                        id: user_email.id,
+                        email: user_email.email,
+                        name: user_email.name,
+                        user_email: user_email.email,
+                        plan: user_email.plan || null,
+                        subsription_status: user_email.subscription_status || null,
+                        billing_id: user_email.billing_id 
+                    },
                     process.env.JWT_SECRET as string, 
                     {expiresIn: '1h'}
                 );
                 await req.session.save();
                 res.cookie('token', token, {httpOnly: true, secure: true, sameSite: 'strict'})
                 res.setHeader('Authorization', `Bearer ${token}`)
-                console.log(res.getHeaders())
                 res.redirect(`${ORIGIN}/profile`)
-                // res.redirect(`${ORIGIN}/profile`)
                 return
             }
         // get user info from token
@@ -129,6 +140,7 @@ async (req: any, res: Response, next: NextFunction) => {
     }
     res.status(200).send('ok');
 })
+
 
 const logout_router = Router();
 logout_router.post('/', async (req: Request, res: Response, next: NextFunction) => {

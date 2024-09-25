@@ -2,7 +2,7 @@ You can log into stripe throught the cli and forward events so your computer can
 ```
 stripe login
 
-stripe listen --forward-to localhost:4242/webhook
+stripe listen --forward-to https://localhost:3000/webhook
 
 stripe trigger payment_intent.succeeded
 ```

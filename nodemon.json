@@ -2,5 +2,5 @@
 	"watch": ["src"],
 	"ext": ".ts,.js",
 	"ignore": [],
-	"exec": "npx ts-node ./src/index.ts"
+	"exec": "(npx ts-node ./src/index.ts & bg_pid=$!; trap \"kill $bg_pid; wait $bg_pid 2>/dev/null\" SIGINT SIGTERM EXIT; stripe listen --forward-to https://localhost:3000/webhook; kill $bg_pid;)"
 }

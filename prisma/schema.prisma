@@ -7,17 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    String @id @default(cuid())
-  email String @unique
-}
-
 model applicants {
-  email        String
-  id           String         @id
-  subscription String?
-  products     products?      @relation(fields: [subscription], references: [name], onDelete: NoAction, onUpdate: NoAction, map: "memership")
-  applications applications[]
+  email           String            @unique(map: "email")
+  id              String            @id
+  stripe_id       String            @unique(map: "unique_client_id")
+  subscription    String?
+  trial_used      Boolean           @default(false)
+  subscriptions   subscriptions?    @relation(fields: [subscription], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "applicant_sub_fkey")
+  applications    applications[]
+  payment_methods payment_methods[]
 }
 
 model applications {
@@ -58,18 +56,40 @@ model jobs {
 }
 
 model products {
-  name             String       @id(map: "memberships_pkey")
-  cv_gen           Boolean
-  cover_letter_gen Boolean
-  stripe_id        String?
-  price            String?
-  applicants       applicants[]
-  prices           prices?      @relation(fields: [price], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sub_pice")
+  name                                  String   @id(map: "memberships_pkey")
+  cv_gen                                Boolean
+  cover_letter_gen                      Boolean
+  stripe_id                             String?  @unique(map: "stripe_id_unique")
+  default_price                         String?
+  prices_prices_productToproducts       prices[] @relation("prices_productToproducts")
+  prices_products_default_priceToprices prices?  @relation("products_default_priceToprices", fields: [default_price], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sub_pice")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 model prices {
-  id       String     @id
-  type     String
-  products products[]
+  id                                      String     @id
+  type                                    String
+  unit_price_cents                        Float
+  internal_description                    String?
+  active                                  Boolean
+  product                                 String
+  trial_description                       String?
+  billing_interval                        String?
+  products_prices_productToproducts       products   @relation("prices_productToproducts", fields: [product], references: [stripe_id], onDelete: NoAction, onUpdate: NoAction, map: "price_product_fkey")
+  products_products_default_priceToprices products[] @relation("products_default_priceToprices")
+}
+
+model payment_methods {
+  stripe_id  String     @id
+  customer   String
+  applicants applicants @relation(fields: [customer], references: [stripe_id], onDelete: NoAction, onUpdate: NoAction, map: "payment_method_customer_fkey")
+}
+
+model subscriptions {
+  id          String       @id(map: "entitlements_pkey")
+  applicant   String
+  product     String
+  creation_dt DateTime     @default(now()) @db.Timestamp(6)
+  status      String
+  applicants  applicants[]
 }

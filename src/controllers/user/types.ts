@@ -5,4 +5,5 @@ export type createUser = {
     given_name: string;
     family_name: string;
     password: string;
+    entitlement?: string;
 }
