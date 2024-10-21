@@ -17,8 +17,9 @@ import https from 'https';
 import User from '@src/models/user/User';
 import cookieParser = require("cookie-parser");
 import { PrismaClient } from "@prisma/client";
-
+import { cleanup, prisma } from "@src/utils/services/db";
 import { client as stripeClient } from '@src/models/stripe/client'
+import { Cache, bootstrap } from "@src/utils/services/cache";
 dotenv.config();
 declare module 'express-session' {
     interface SessionData {
@@ -36,6 +37,8 @@ const usersController = new UsersController();
 mongoose
     .connect(process.env.MONGO_URI as string)
     .then(async () => {
+    await prisma.$connect()
+    
     console.log('connected to db')
     // delete mongo users
     await User.deleteMany({})
@@ -45,6 +48,10 @@ mongoose
         let cv = user.cv
         cv = await CV.create(cv)
         user.cv = cv
+        await Cache.ping().then(async () => {
+            await Cache.flushall()
+            console.log('redis connected')
+        })
         // first creating user document in mongo 
         const user_mongo = await User.create(user)
 
@@ -56,26 +63,44 @@ mongoose
                 }
             }
         )
-        if( user_postgres ){
-            await client.applicants.delete({
+
+        if(user_postgres.subscription){
+            await stripeClient.subscriptions.cancel(user_postgres.subscription).catch((err) => {
+                console.log(err)
+                console.log('could not cancel subscription')
+            })
+            await client.applicants.update({
                 where: {
                     id: user_mongo.id
+                },
+                data: {
+                    subscription: null
                 }
             })
+            
         }
-
-        // if user already exists in stripe, delete them
-        await stripeClient.customers.del(user_postgres.stripe_id).catch((err) => {
-            console.log(err)
-            console.log('could not delete customer')
+        
+        await client.subscriptions.deleteMany()
+        await client.payment_methods.deleteMany()
+        await client.applicants.delete({
+            where: {
+                id: user_mongo.id
+            }
         })
+        
+        // if user already exists in stripe, delete them
+        if(user_postgres){
+            await stripeClient.customers.del(user_postgres.stripe_id).catch((err) => {
+                console.log(err)
+                console.log('could not delete customer')
+            })
+        }
+       
 
         // create user in stripe
         const stripe_customer = await stripeClient.customers.create({
-            email: user_mongo.email,
-            metadata: {
-                user_id: user_mongo.id
-            }
+            name: user_mongo.name,
+            email: user_mongo.email
         })
 
         // create user in postgres with mongo id, with stripe id attached
@@ -89,8 +114,8 @@ mongoose
             console.log(err)
             console.log('Something went wrong with postgres')
         })
-
-        await mongoose.connection.close()
+        await bootstrap()
+        await cleanup()
     })
     
 })

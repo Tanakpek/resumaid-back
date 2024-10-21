@@ -2,12 +2,15 @@ import { Router, Request, Response, NextFunction } from 'express';
 export const WebhookRouter = Router();
 import { client as stripeClient } from '@src/models/stripe/client'
 import parser from 'body-parser';
+import { sync_jobs, async_jobs } from '@src/models/stripe/utils/handlers';
+
+
+
 
 WebhookRouter.post(
     '/',
     parser.raw({ type: 'application/json' }),
     async (req: Request, res) => {
-        console.log(process.env.STRIPE_WEBHOOK_SECRET)
         // Retrieve the event by verifying the signature using the raw body and secret.
         let event;
         try {
@@ -25,11 +28,37 @@ WebhookRouter.post(
             return res.sendStatus(400);
         }
         // Extract the object from the event. 
-
         // Handle the event
         // Review important events for Billing webhooks
         // https://stripe.com/docs/billing/webhooks
         // Remove comment to see the various objects sent for this sample
+        if(sync_jobs[event.type]){
+            try{
+                await sync_jobs[event.type](event);
+                return res.sendStatus(200);
+            }
+            catch(e){
+                console.log(e)
+                return res.sendStatus(500);
+            }
+        }
+        // will handle these asyncronously
+        else if(async_jobs[event.type]){
+            try{
+                async_jobs[event.type](event).then(() => {
+                }).catch((e) => {
+                    console.log(e)
+                })
+                return res.sendStatus(200);
+            }
+            catch(e){
+                console.log(e)
+                return res.sendStatus(500);
+            }
+            
+        }
+        return res.sendStatus(200);
+
         switch (event.type) {
             case 'invoice.paid':
                 // Used to provision services after the trial has ended.

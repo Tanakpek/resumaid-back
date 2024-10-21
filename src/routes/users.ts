@@ -8,7 +8,7 @@ import fs from 'fs';
 import CV from '@src/models/cv/CV';
 import { client as stripeClient } from '@src/models/stripe/client';
 import Cookies from 'cookies';
-
+import { Cache, cvKey, profileKey } from '@src/utils/services/cache';
 const usersController = new UsersController();
 const router = Router();
 
@@ -16,21 +16,26 @@ const router = Router();
 router.get('/profile', 
 async (req: any, res: Response, next: NextFunction) => {
         try{
+            let cachedData = await Cache.get(profileKey(req.userData.userId));
+            cachedData = JSON.parse(cachedData);
             
-            const user = await usersController.getUser(req.userData.userId);
-            if(!user){
-                res.status(500).send('User not found');
-                return
+            if( cachedData ){
+                return res.status(200).json(cachedData);
             }
-            const { name, given_name, family_name, email, bio,  cv_uploaded, linkedin, github, personal_website, details } = user ;
-            const resp = {  name, given_name, bio, family_name, email, cv_uploaded, linkedin, github, personal_website, details, plan: req.userData.plan };
-            if (req.query?.stripe_session_id) {
-                console.log(req.query?.stripe_session_id)
+            else{
+                const user = await usersController.getUser(req.userData.userId);
+                if (!user) {
+                    res.status(500).send('User not found');
+                    return
+                }
+                const { name, given_name, family_name, email, bio, cv_uploaded, linkedin, github, personal_website, details } = user;
+                const resp:any = { name, given_name, bio, family_name, email, cv_uploaded, linkedin, github, personal_website, details };
                 try {
                     // console.log('here')
                     const userData = req['userData'];
-                    console.log(userData)
                     const login = await usersController.getUserByEmail(userData?.email);
+                    resp.plan = login? login.plan || null : null;
+                    resp.subscription_status = login? login.subscription_status || null : null;
                     if (login) {
                         const token = jwt.sign(
                             {
@@ -40,22 +45,21 @@ async (req: any, res: Response, next: NextFunction) => {
                                 plan: login.plan || null,
                                 subscription_status: login.subscription_status || null,
                                 billing_id: login.billing_id || null,
-                                // todo get webhook to update user and return plan
                             },
                             process.env.JWT_SECRET as string,
                             { expiresIn: '1h' }
                         );
-                        console.log(res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'none' }))
+                        res.cookie('token', token, { httpOnly: true, secure: true, sameSite: 'strict' })
                     }
-                    else{
+                    else {
                         console.log('no')
                     }
                 } catch (e) {
                     console.log(e)
                 }
+                await Cache.set(profileKey(req.userData.userId), JSON.stringify(resp));
+                return res.status(200).json(resp)
             }
-            return res.status(200).json(resp);
-            
         }catch(e){
             console.log(e)
             res.status(500).send('There was an error, please try again later');
@@ -136,9 +140,19 @@ router.get('/cv',
             //     res.status(403).send('Start trial or subscribe to view CV');
             //     return
             // }
-            const cv = await usersController.getCV(req.userData.email);
-            return res.status(200).json(cv);
-
+            const cachedCV =  await Cache.get(cvKey(req.userData.userId));
+            if(cachedCV){
+                return res.status(200).json(JSON.parse(cachedCV));
+            }
+            else{
+                const cv = await usersController.getCV(req.userData.email);
+                if (!cv) {
+                    res.status(500).send('CV not found');
+                    return
+                }
+                await Cache.set(cvKey(req.userData.userId), JSON.stringify(cv));
+                return res.status(200).json(cv);
+            }
         } catch (e) {
             console.log(e)
             res.status(500).send('There was an error, please try again later');
@@ -168,6 +182,7 @@ router.post('/details',
         try {
             const user = await usersController.updateDetails(req.userData.email, req.body);
             if (typeof user !== 'number') {
+                await Cache.del(profileKey(req.userData.userId));
                 return res.status(200).json(user);
             } else {
                 res.status(user).send();
@@ -184,6 +199,7 @@ router.post('/cv/education',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.updateEducation(req.userData.email, req.body)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -201,6 +217,7 @@ router.delete('/cv/education/:id',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.deleteEducation(req.userData.email, req.params.id)
+            await Cache.del(cvKey(req.userData.userId));
             if(typeof cv !== 'number'){
                 return res.status(200).json(cv);
             }else{
@@ -218,6 +235,7 @@ router.post('/cv/work',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.updateWork(req.userData.email, req.body)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -234,6 +252,7 @@ router.delete('/cv/work/:id',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.deleteWork(req.userData.email, req.params.id)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -251,6 +270,7 @@ router.post('/cv/projects',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.updateProjects(req.userData.email, req.body)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -267,6 +287,7 @@ router.delete('/cv/projects/:id',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.deleteProject(req.userData.email, req.params.id)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -284,6 +305,7 @@ router.post('/cv/volunteer',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.updateVolunteer(req.userData.email, req.body)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -301,6 +323,7 @@ router.delete('/cv/volunteer/:id',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.deleteVolunteer(req.userData.email, req.params.id)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -318,6 +341,7 @@ router.post('/cv/achievements',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.updateAchievements(req.userData.email, req.body)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -335,6 +359,7 @@ router.post('/cv/skills',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.updateSkills(req.userData.email, req.body)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -352,6 +377,7 @@ router.post('/cv/certifications',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.updateCertificates(req.userData.email, req.body)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {
@@ -381,6 +407,7 @@ router.post('/cv/languages',
     async (req: any, res: Response, next: NextFunction) => {
         try {
             const cv = await usersController.updateLanguages(req.userData.email, req.body)
+            await Cache.del(cvKey(req.userData.userId));
             if (typeof cv !== 'number') {
                 return res.status(200).json(cv);
             } else {

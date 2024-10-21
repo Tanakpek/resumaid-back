@@ -6,6 +6,7 @@ export const GOOGLE_OAUTH_CLIENT_ID = '1044586183876-aq7hmksu9aq656lt1hdouhdcmck
 export const GOOGLE_OAUTH_REDIRECT_URI = 'https://127.0.0.1:3000/login/oauth'
 export const ORIGIN = process.env.ORIGIN || 'https://127.0.0.1:5173'
 export const DATA_API_URL = process.env.DATA_API_URL || 'http://127.0.0.1:8000'
+export const DOCGEN_API_URL = process.env.DOCGEN_API_URL || 'http://127.0.0.1:5052'
 
 const options = {
     redirect_uri: GOOGLE_OAUTH_REDIRECT_URI,

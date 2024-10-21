@@ -3,8 +3,9 @@ import bcrypt, { hash } from "bcrypt";
 import { PrismaClient } from "@prisma/client";
 
 import CV from "@src/models/cv/CV";
+import { prisma } from "@src/utils/services/db";
 export class CVsController {
-    private prisma = new PrismaClient();
+    private prisma = prisma
     constructor(){
 
     }

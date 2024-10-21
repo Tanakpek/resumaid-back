@@ -19,7 +19,8 @@ import fs from 'fs';
 import https from 'https';
 import User from '@src/models/user/User';
 import cookieParser = require("cookie-parser");
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@src/utils/services/db";
+import { Cache } from "@src/utils/services/cache";
 dotenv.config();
 import {client as stripeClient} from '@src/models/stripe/client'
 import { BaseStripeErrorHandler } from "@src/models/stripe/utils/ErrorHandler";
@@ -59,19 +60,16 @@ const httpsOptions = {
     cert: fs.readFileSync('./src/utils/services/ssl/cert.pem')
   }
 
-  mongoose
-  .connect(process.env.MONGO_URI as string)
-  .then(() => console.log("database connected successfully"))
-//   .catch((err) => console.log("error connecting to mongodb", err));
-
-
-const server = https.createServer(httpsOptions, app).listen(port, async () => {
-    // await client.user.deleteMany();
-    // if(true){
-    //     const prisma = new PrismaClient();
-    //     await prisma.user.deleteMany();
-    //     await User.deleteMany()
-    //     await CV.deleteMany();
-    // }
-    console.log('Server running at ' + port)
+mongoose
+.connect(process.env.MONGO_URI as string)
+.then(() => {
+console.log("database connected successfully")
+    const server = https.createServer(httpsOptions, app).listen(port, async () => {
+        await Cache.ping()
+        await prisma.$connect()
+        console.log('Server running at ' + port)
+    })
 })
+.catch((err) => console.log("program crashed", err));
+
+

@@ -3,3 +3,4 @@ export const makeImmutable: (obj: string[]) => { immutable: true, value: string 
         return { immutable: true, value: value }
     })
 }
+

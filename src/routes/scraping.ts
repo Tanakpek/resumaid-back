@@ -2,7 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { body, check, validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'
-import { ORIGIN, DATA_API_URL } from '@src/config/vars';
+import { ORIGIN, DATA_API_URL, DOCGEN_API_URL } from '@src/config/vars';
 import { ScrapeInstructionsController } from '@src/controllers/scraper/scrape_instruction_controller';
 import User from '@src/models/user/User';
 import axios from 'axios';
@@ -43,7 +43,6 @@ router.post('/resume/',[
         const cv = user.cv;
         const body = req.body;
         const prep = { ...req.body, cv }
-        console.log(req.userData.userId)
         prep.user_id = req.userData.userId
         let job_string = ''
         job_string += `Job Title: ${body.job_title}\n`
@@ -52,20 +51,29 @@ router.post('/resume/',[
         job_string += `Job Description: ${body.description}\n`
         prep.job = job_string
 
-        const fileResponse = await axios( DATA_API_URL + '/api/v1/generate/cv/curate/',{
+        const response = await axios( DATA_API_URL + '/api/v1/generate/cv/curate/',{
             method: 'post' ,
-            responseType: 'stream', // Ensure response is returned as a stream,
+            // responseType: 'stream', // Ensure response is returned as a stream,
             data: prep
         });
 
-        res.setHeader('Content-Disposition', fileResponse.headers['content-disposition']);
-        res.setHeader('Content-Type', fileResponse.headers['content-type']);
-        fileResponse.data.pipe(res);
-        fileResponse.data.on('error', (err: Error) => {
-            console.error('Error in stream:', err);
-            res.status(500).send('Error while downloading the file');
-        });
-        return fileResponse
+        console.log(response.data)
+
+        // const fileResponse = await axios(DOCGEN_API_URL + '/api/cvs/', {
+        //     method: 'post',
+        //     headers: {
+        //         "Content-Type": "application/json"
+        //     },
+        //     responseType: 'stream', // Ensure response is returned as a stream,
+        //     data: prep
+        // });
+
+        
+        // fileResponse.data.on('error', (err: Error) => {
+        //     console.error('Error in stream:', err);
+        //     res.status(500).send('Error while downloading the file');
+        // });
+        // return fileResponse
 
     } catch (e) {
         console.log(e)
@@ -73,6 +81,7 @@ router.post('/resume/',[
     }
 })
 
+// NO NEED FOR DOCGEN API YET
 router.post('/cover/', [
     // body('description').isString(),
     // body('description').isLength({ min: 10 }),
@@ -95,6 +104,8 @@ router.post('/cover/', [
         job_string += `Company: ${body.company}\n`
         job_string += `Recruiter Name: ${body.recruiter !== "" ? body.recruiter : 'Information Not Available' }\n`
         job_string += `Job Description: ${body.description}\n`
+        // add logic to check if style is present
+        prep.style = prep.style ? prep.style : 'classic'
 
         prep.job = job_string
         const fileResponse = await axios(DATA_API_URL + '/api/v1/generate/cover_letter/', {

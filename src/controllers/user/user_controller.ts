@@ -9,10 +9,13 @@ import CV from "@src/models/cv/CV";
 import { CVInfo, Education, Project, WorkExperience } from "@src/utils/applicaid-ts-utils/cv_type";
 import mongoose from "mongoose";
 import { client as stripeClient } from "@src/models/stripe/client";
-import { SubscriptionStatus } from "@src/models/stripe/types";
+import { SubscriptionStatus } from "@src/models/stripe/types/shared";
+import { Cache, stripeToUserIdKey } from "@src/utils/services/cache";
+import { prisma } from "@src/utils/services/db";
 export class UsersController {
-    private prisma = new PrismaClient();
+    private prisma = prisma
     private CVsController = new CVsController();
+    private cache = Cache
     constructor(){
 
     }
@@ -36,8 +39,10 @@ export class UsersController {
             let new_user = await User.create(userdata)
             new_user = await new_user.save()
             let stripeCustomer;
+            
             try{
                 stripeCustomer = await stripeClient.customers.create({
+                    name: user.name,
                     email: user.email,
                     metadata: {
                         user_id: new_user.id
@@ -133,19 +138,22 @@ export class UsersController {
             return false;
         }
 
-        const user_record: applicants & { plan_name: string | null, subscription_status: SubscriptionStatus | null } = await this.prisma.$queryRaw`
+        const user_data: (applicants & { plan: string | null, subscription_status: SubscriptionStatus | null })[] = await this.prisma.$queryRaw`
         SELECT applicants.*, products.stripe_id as plan, subscriptions.status as subscription_status FROM private.applicants 
         LEFT  JOIN private.subscriptions  ON applicants.subscription = subscriptions.id
         LEFT JOIN private.products  ON subscriptions.product = products.stripe_id
 		where applicants.email = ${email}
         `
-
+        const user_record = user_data[0]
+     
         if (!user_record) {
+            console.log('no user record')
             return false;
         }
+        
         else {
             try {
-                return { id: user_app_data.id, email: user_app_data.email, name: user_app_data.name, plan: user_record.plan_name, subscription_status: user_record.subscription_status || null, billing_id: user_record.stripe_id }
+                return { id: user_app_data.id, email: user_app_data.email, name: user_app_data.name, plan: user_record.plan, subscription_status: user_record.subscription_status || null, billing_id: user_record.stripe_id }
             }
             catch (e) {
                 return false;
@@ -173,6 +181,47 @@ export class UsersController {
         }catch(e){
             console.error(e)
             return 500
+        }
+    }
+
+    async getUserIdFromStripeId  (stripe_id: string) {
+        try {
+            let id = await this.cache.get(stripeToUserIdKey(stripe_id))
+            if (!id) {
+                const applicant = await this.prisma.applicants.findFirst({
+                    where: {
+                        stripe_id
+                    }
+                })
+                if (applicant) {
+                    id = applicant.id
+                    await this.cache.set(stripeToUserIdKey(stripe_id), id)
+                }
+            }
+            if (id) {
+                return id
+            } else {
+                throw new Error('could not find user from stripe id')
+            }
+        } catch (e) {
+            console.log(e)
+            return false
+        }
+    }
+
+    async getUserFromSubscription(subscription_id: string): Promise<string | false> {
+        try {
+            const applicant = await this.prisma.applicants.findFirst({
+                where: {
+                    subscription: subscription_id
+                }
+            })
+            if (applicant) {
+                return applicant.id
+            }
+        } catch (e) {
+            console.log(e)
+            return false
         }
     }
 
