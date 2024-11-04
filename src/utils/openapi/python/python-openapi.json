@@ -1,0 +1,1030 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Applicaid AI API",
+        "description": "API for Applicaid AI",
+        "contact": {
+            "name": "Applicaid"
+        },
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/api/v1/generate/assistant": {
+            "post": {
+                "summary": "Assistant",
+                "operationId": "assistant_api_v1_generate_assistant_post",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/generate/cv/curate": {
+            "post": {
+                "summary": "Cv Curate",
+                "operationId": "cv_curate_api_v1_generate_cv_curate_post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CVCurateRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JobCV"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/generate/cover_letter/": {
+            "post": {
+                "summary": "Cover Letter",
+                "operationId": "cover_letter_api_v1_generate_cover_letter__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CoverLetterRequest"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary",
+                                    "title": "Response Cover Letter Api V1 Generate Cover Letter  Post"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CVCurateRequest": {
+                "properties": {
+                    "company": {
+                        "type": "string",
+                        "title": "Company"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "user_id": {
+                        "type": "string",
+                        "title": "User Id"
+                    },
+                    "job_id": {
+                        "type": "string",
+                        "title": "Job Id"
+                    },
+                    "job_board": {
+                        "type": "string",
+                        "title": "Job Board"
+                    },
+                    "job_scraping_page": {
+                        "type": "string",
+                        "title": "Job Scraping Page"
+                    },
+                    "job_title": {
+                        "type": "string",
+                        "title": "Job Title"
+                    },
+                    "recruiter": {
+                        "type": "string",
+                        "title": "Recruiter"
+                    },
+                    "special_instructions": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Special Instructions"
+                    },
+                    "cv": {
+                        "$ref": "#/components/schemas/RequestCVInfo"
+                    },
+                    "job": {
+                        "type": "string",
+                        "title": "Job"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "company",
+                    "description",
+                    "user_id",
+                    "job_id",
+                    "job_board",
+                    "job_scraping_page",
+                    "job_title",
+                    "recruiter",
+                    "special_instructions",
+                    "cv",
+                    "job"
+                ],
+                "title": "CVCurateRequest"
+            },
+            "Classification": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Classification",
+                "description": "Classification of the degree"
+            },
+            "CoverLetterRequest": {
+                "properties": {
+                    "user_id": {
+                        "type": "string",
+                        "title": "User Id"
+                    },
+                    "job_id": {
+                        "type": "string",
+                        "title": "Job Id"
+                    },
+                    "job_board": {
+                        "type": "string",
+                        "title": "Job Board"
+                    },
+                    "job_scraping_page": {
+                        "type": "string",
+                        "title": "Job Scraping Page"
+                    },
+                    "special_instructions": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Special Instructions"
+                    },
+                    "style": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Style"
+                    },
+                    "cv": {
+                        "$ref": "#/components/schemas/RequestCVInfo"
+                    },
+                    "job": {
+                        "type": "string",
+                        "title": "Job"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "user_id",
+                    "job_id",
+                    "job_board",
+                    "job_scraping_page",
+                    "special_instructions",
+                    "style",
+                    "cv",
+                    "job"
+                ],
+                "title": "CoverLetterRequest"
+            },
+            "Degree": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Degree",
+                "description": "Degree obtained by the applicant"
+            },
+            "Dissertation": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Dissertation",
+                "description": "Dissertation title"
+            },
+            "Education": {
+                "properties": {
+                    "institution": {
+                        "$ref": "#/components/schemas/Institution"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/Location"
+                    },
+                    "degree": {
+                        "$ref": "#/components/schemas/Degree"
+                    },
+                    "dissertation": {
+                        "$ref": "#/components/schemas/Dissertation"
+                    },
+                    "thesis": {
+                        "$ref": "#/components/schemas/Thesis"
+                    },
+                    "dates": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "maxItems": 2,
+                        "title": "Dates"
+                    },
+                    "score": {
+                        "$ref": "#/components/schemas/Score"
+                    },
+                    "classification": {
+                        "$ref": "#/components/schemas/Classification"
+                    },
+                    "gpa": {
+                        "$ref": "#/components/schemas/Gpa"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "institution",
+                    "location",
+                    "degree",
+                    "dissertation",
+                    "thesis",
+                    "dates",
+                    "score",
+                    "classification",
+                    "gpa"
+                ],
+                "title": "Education"
+            },
+            "Gpa": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Gpa",
+                "description": "GPA of the applicant"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "Institution": {
+                "type": "string",
+                "title": "Institution",
+                "description": "Institution from which the degree was obtaineda"
+            },
+            "JobCV": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name",
+                        "description": "Name of the applicant"
+                    },
+                    "title": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Title",
+                        "description": "Title of the applicant, if any"
+                    },
+                    "education": {
+                        "items": {
+                            "$ref": "#/components/schemas/Education"
+                        },
+                        "type": "array",
+                        "title": "Education",
+                        "description": "education history of an applicant"
+                    },
+                    "achievements_and_awards": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Achievements And Awards",
+                        "description": "Achievements and awards of the applicant"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description",
+                        "description": "Description of the applicant"
+                    },
+                    "projects": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/Project"
+                        },
+                        "type": "object",
+                        "title": "Projects",
+                        "description": "Projects of the applicant keyed by project name"
+                    },
+                    "volunteer": {
+                        "items": {
+                            "$ref": "#/components/schemas/Volunteer"
+                        },
+                        "type": "array",
+                        "title": "Volunteer",
+                        "description": "Volunteer experience of the applicant keyed by position at organization"
+                    },
+                    "work": {
+                        "additionalProperties": {
+                            "items": {
+                                "$ref": "#/components/schemas/WorkExperience"
+                            },
+                            "type": "array"
+                        },
+                        "type": "object",
+                        "title": "Work",
+                        "description": "Roles of the applicant keyed by company name to roles in the company"
+                    },
+                    "skills": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Skills",
+                        "description": "Skills of the applicant"
+                    },
+                    "languages": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Languages",
+                        "description": "Languages spoken by the applicant"
+                    },
+                    "professional_certifications": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "title": "Professional Certifications",
+                        "description": "Professional certifications of the applicant"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "name",
+                    "title",
+                    "education",
+                    "achievements_and_awards",
+                    "description",
+                    "projects",
+                    "volunteer",
+                    "work",
+                    "skills",
+                    "languages",
+                    "professional_certifications"
+                ],
+                "title": "JobCV"
+            },
+            "Location": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Location",
+                "description": "Location of the institution"
+            },
+            "Project": {
+                "properties": {
+                    "takeaways": {
+                        "items": {
+                            "$ref": "#/components/schemas/Takeaway"
+                        },
+                        "type": "array",
+                        "title": "Takeaways"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "takeaways"
+                ],
+                "title": "Project"
+            },
+            "RequestAchievement": {
+                "properties": {
+                    "immutable": {
+                        "type": "boolean",
+                        "title": "Immutable"
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value"
+                    },
+                    "_id": {
+                        "type": "string",
+                        "title": " Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "immutable",
+                    "value",
+                    "_id"
+                ],
+                "title": "RequestAchievement"
+            },
+            "RequestCVInfo": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "title": {
+                        "type": "string",
+                        "title": "Title"
+                    },
+                    "education": {
+                        "items": {
+                            "$ref": "#/components/schemas/RequestEducation"
+                        },
+                        "type": "array",
+                        "title": "Education"
+                    },
+                    "achievements_and_awards": {
+                        "items": {
+                            "$ref": "#/components/schemas/RequestAchievement"
+                        },
+                        "type": "array",
+                        "title": "Achievements And Awards"
+                    },
+                    "description": {
+                        "type": "string",
+                        "title": "Description"
+                    },
+                    "projects": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/RequestProject"
+                        },
+                        "type": "object",
+                        "title": "Projects"
+                    },
+                    "volunteer": {
+                        "items": {
+                            "$ref": "#/components/schemas/RequestVolunteer"
+                        },
+                        "type": "array",
+                        "title": "Volunteer"
+                    },
+                    "work": {
+                        "additionalProperties": {
+                            "items": {
+                                "$ref": "#/components/schemas/RequestWorkExperience"
+                            },
+                            "type": "array"
+                        },
+                        "type": "object",
+                        "title": "Work"
+                    },
+                    "skills": {
+                        "items": {
+                            "$ref": "#/components/schemas/RequestSkill"
+                        },
+                        "type": "array",
+                        "title": "Skills"
+                    },
+                    "languages": {
+                        "items": {
+                            "$ref": "#/components/schemas/RequestLanguage"
+                        },
+                        "type": "array",
+                        "title": "Languages"
+                    },
+                    "professional_certifications": {
+                        "items": {
+                            "$ref": "#/components/schemas/RequestCertification"
+                        },
+                        "type": "array",
+                        "title": "Professional Certifications"
+                    },
+                    "email": {
+                        "type": "string",
+                        "title": "Email"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "name",
+                    "title",
+                    "education",
+                    "achievements_and_awards",
+                    "description",
+                    "projects",
+                    "volunteer",
+                    "work",
+                    "skills",
+                    "languages",
+                    "professional_certifications",
+                    "email"
+                ],
+                "title": "RequestCVInfo"
+            },
+            "RequestCertification": {
+                "properties": {
+                    "immutable": {
+                        "type": "boolean",
+                        "title": "Immutable"
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value"
+                    },
+                    "_id": {
+                        "type": "string",
+                        "title": " Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "immutable",
+                    "value",
+                    "_id"
+                ],
+                "title": "RequestCertification"
+            },
+            "RequestEducation": {
+                "properties": {
+                    "institution": {
+                        "$ref": "#/components/schemas/Institution"
+                    },
+                    "location": {
+                        "$ref": "#/components/schemas/Location"
+                    },
+                    "degree": {
+                        "$ref": "#/components/schemas/Degree"
+                    },
+                    "dissertation": {
+                        "$ref": "#/components/schemas/Dissertation"
+                    },
+                    "thesis": {
+                        "$ref": "#/components/schemas/Thesis"
+                    },
+                    "dates": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "maxItems": 2,
+                        "title": "Dates"
+                    },
+                    "score": {
+                        "$ref": "#/components/schemas/Score"
+                    },
+                    "classification": {
+                        "$ref": "#/components/schemas/Classification"
+                    },
+                    "gpa": {
+                        "$ref": "#/components/schemas/Gpa"
+                    },
+                    "_id": {
+                        "type": "string",
+                        "title": " Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "institution",
+                    "location",
+                    "degree",
+                    "dissertation",
+                    "thesis",
+                    "dates",
+                    "score",
+                    "classification",
+                    "gpa",
+                    "_id"
+                ],
+                "title": "RequestEducation"
+            },
+            "RequestLanguage": {
+                "properties": {
+                    "immutable": {
+                        "type": "boolean",
+                        "title": "Immutable"
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value"
+                    },
+                    "_id": {
+                        "type": "string",
+                        "title": " Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "immutable",
+                    "value",
+                    "_id"
+                ],
+                "title": "RequestLanguage"
+            },
+            "RequestProject": {
+                "properties": {
+                    "takeaways": {
+                        "items": {
+                            "$ref": "#/components/schemas/RequestTakeaway"
+                        },
+                        "type": "array",
+                        "title": "Takeaways"
+                    },
+                    "immutable": {
+                        "type": "boolean",
+                        "title": "Immutable"
+                    },
+                    "_id": {
+                        "type": "string",
+                        "title": " Id"
+                    },
+                    "on": {
+                        "type": "boolean",
+                        "title": "On"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "takeaways",
+                    "immutable",
+                    "_id",
+                    "on"
+                ],
+                "title": "RequestProject"
+            },
+            "RequestSkill": {
+                "properties": {
+                    "immutable": {
+                        "type": "boolean",
+                        "title": "Immutable"
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value"
+                    },
+                    "_id": {
+                        "type": "string",
+                        "title": " Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "immutable",
+                    "value",
+                    "_id"
+                ],
+                "title": "RequestSkill"
+            },
+            "RequestTakeaway": {
+                "properties": {
+                    "immutable": {
+                        "type": "boolean",
+                        "title": "Immutable"
+                    },
+                    "value": {
+                        "type": "string",
+                        "title": "Value"
+                    },
+                    "sel": {
+                        "type": "boolean",
+                        "title": "Sel"
+                    },
+                    "_id": {
+                        "type": "string",
+                        "title": " Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "immutable",
+                    "value",
+                    "sel",
+                    "_id"
+                ],
+                "title": "RequestTakeaway"
+            },
+            "RequestVolunteer": {
+                "properties": {
+                    "organization_name": {
+                        "type": "string",
+                        "title": "Organization Name"
+                    },
+                    "role": {
+                        "type": "string",
+                        "title": "Role"
+                    },
+                    "takeaways": {
+                        "items": {
+                            "$ref": "#/components/schemas/RequestTakeaway"
+                        },
+                        "type": "array",
+                        "title": "Takeaways"
+                    },
+                    "dates": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "maxItems": 2,
+                        "minItems": 2,
+                        "title": "Dates"
+                    },
+                    "immutable": {
+                        "type": "boolean",
+                        "title": "Immutable"
+                    },
+                    "_id": {
+                        "type": "string",
+                        "title": " Id"
+                    },
+                    "on": {
+                        "type": "boolean",
+                        "title": "On"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "organization_name",
+                    "role",
+                    "takeaways",
+                    "dates",
+                    "immutable",
+                    "_id",
+                    "on"
+                ],
+                "title": "RequestVolunteer"
+            },
+            "RequestWorkExperience": {
+                "properties": {
+                    "role": {
+                        "type": "string",
+                        "title": "Role"
+                    },
+                    "dates": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "maxItems": 2,
+                        "minItems": 1,
+                        "title": "Dates"
+                    },
+                    "takeaways": {
+                        "items": {
+                            "$ref": "#/components/schemas/RequestTakeaway"
+                        },
+                        "type": "array",
+                        "title": "Takeaways"
+                    },
+                    "immutable": {
+                        "type": "boolean",
+                        "title": "Immutable"
+                    },
+                    "on": {
+                        "type": "boolean",
+                        "title": "On"
+                    },
+                    "_id": {
+                        "type": "string",
+                        "title": " Id"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "role",
+                    "dates",
+                    "takeaways",
+                    "immutable",
+                    "on",
+                    "_id"
+                ],
+                "title": "RequestWorkExperience"
+            },
+            "Score": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Score",
+                "description": "Score obtained in the degree"
+            },
+            "Takeaway": {
+                "properties": {
+                    "desc": {
+                        "type": "string",
+                        "title": "Desc"
+                    },
+                    "rank": {
+                        "type": "integer",
+                        "title": "Rank"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "desc",
+                    "rank"
+                ],
+                "title": "Takeaway"
+            },
+            "Thesis": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "null"
+                    }
+                ],
+                "title": "Thesis",
+                "description": "Thesis title"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            },
+            "Volunteer": {
+                "properties": {
+                    "organization_name": {
+                        "type": "string",
+                        "title": "Organization Name"
+                    },
+                    "role": {
+                        "type": "string",
+                        "title": "Role"
+                    },
+                    "takeaways": {
+                        "items": {
+                            "$ref": "#/components/schemas/Takeaway"
+                        },
+                        "type": "array",
+                        "title": "Takeaways"
+                    },
+                    "dates": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "maxItems": 2,
+                        "minItems": 2,
+                        "title": "Dates"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "organization_name",
+                    "role",
+                    "takeaways",
+                    "dates"
+                ],
+                "title": "Volunteer"
+            },
+            "WorkExperience": {
+                "properties": {
+                    "role": {
+                        "type": "string",
+                        "title": "Role"
+                    },
+                    "dates": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "maxItems": 2,
+                        "title": "Dates"
+                    },
+                    "takeaways": {
+                        "items": {
+                            "$ref": "#/components/schemas/Takeaway"
+                        },
+                        "type": "array",
+                        "title": "Takeaways"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "role",
+                    "dates",
+                    "takeaways"
+                ],
+                "title": "WorkExperience"
+            }
+        }
+    }
+}

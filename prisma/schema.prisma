@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -9,33 +10,24 @@ datasource db {
 
 model applicants {
   email                                                              String            @unique(map: "email")
-  id                                                                 String            @id
+  id                                                                 String            @id @unique(map: "id")
   stripe_id                                                          String            @unique(map: "unique_client_id")
   subscription                                                       String?
   trial_used                                                         Boolean           @default(false)
   default_payment_method                                             String?
-  subscriptions                                                      subscriptions?    @relation(fields: [subscription], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "applicant_sub_fkey")
+  subscriptions_applicants_subscriptionTosubscriptions               subscriptions?    @relation("applicants_subscriptionTosubscriptions", fields: [subscription], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "applicant_sub_fkey")
   payment_methods_applicants_default_payment_methodTopayment_methods payment_methods?  @relation("applicants_default_payment_methodTopayment_methods", fields: [default_payment_method], references: [stripe_id], onDelete: NoAction, onUpdate: NoAction, map: "pm_fkey")
   applications                                                       applications[]
-  payment_methods                                                    payment_methods[]
+  payment_methods_payment_methods_customerToapplicants               payment_methods[] @relation("payment_methods_customerToapplicants")
+  runs                                                               runs[]
   subscriptions_subscriptions_applicant_stripe_idToapplicants        subscriptions[]   @relation("subscriptions_applicant_stripe_idToapplicants")
 }
 
-model applications {
-  id             String     @id @db.Uuid
-  dt             DateTime   @default(now()) @db.Timestamp(6)
-  job_board      String     @db.Uuid
-  job            String
-  recruiter_name String?
-  applicant      String
-  applicants     applicants @relation(fields: [applicant], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "application_applicant_fkey")
-  jobs           jobs       @relation(fields: [job], references: [unique_id], onDelete: NoAction, onUpdate: NoAction)
-}
-
 model job_boards {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name     String
   root_url String
+  logo_url String?
   jobs     jobs[]
 }
 
@@ -47,25 +39,14 @@ model job_scraping_pages {
   job_id_param String?
 }
 
-model jobs {
-  id             String         @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  job_board      String         @db.Uuid
-  title          String?
-  recruiter_name String?
-  company        String?
-  unique_id      String         @id
-  applications   applications[]
-  job_boards     job_boards     @relation(fields: [job_board], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model products {
-  name                                  String   @id(map: "memberships_pkey")
-  cv_gen                                Boolean
-  cover_letter_gen                      Boolean
-  stripe_id                             String?  @unique(map: "stripe_id_unique")
-  default_price                         String?
-  prices_prices_productToproducts       prices[] @relation("prices_productToproducts")
-  prices_products_default_priceToprices prices?  @relation("products_default_priceToprices", fields: [default_price], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sub_pice")
+model payment_methods {
+  stripe_id                                                     String       @id
+  customer                                                      String
+  last_4                                                        Int?
+  type                                                          String
+  card_brand                                                    String?
+  applicants_applicants_default_payment_methodTopayment_methods applicants[] @relation("applicants_default_payment_methodTopayment_methods")
+  applicants_payment_methods_customerToapplicants               applicants   @relation("payment_methods_customerToapplicants", fields: [customer], references: [stripe_id], onDelete: NoAction, onUpdate: NoAction, map: "payment_method_customer_fkey")
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -83,14 +64,14 @@ model prices {
   subscriptions                           subscriptions[]
 }
 
-model payment_methods {
-  stripe_id                                                     String       @id
-  customer                                                      String
-  last_4                                                        Int?
-  type                                                          String
-  card_brand                                                    String?
-  applicants_applicants_default_payment_methodTopayment_methods applicants[] @relation("applicants_default_payment_methodTopayment_methods")
-  applicants                                                    applicants   @relation(fields: [customer], references: [stripe_id], onDelete: NoAction, onUpdate: NoAction, map: "payment_method_customer_fkey")
+model products {
+  name                                  String   @id(map: "memberships_pkey")
+  cv_gen                                Boolean
+  cover_letter_gen                      Boolean
+  stripe_id                             String?  @unique(map: "stripe_id_unique")
+  default_price                         String?
+  prices_prices_productToproducts       prices[] @relation("prices_productToproducts")
+  prices_products_default_priceToprices prices?  @relation("products_default_priceToprices", fields: [default_price], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sub_pice")
 }
 
 model subscriptions {
@@ -102,7 +83,54 @@ model subscriptions {
   current_period_start                                     DateTime     @db.Timestamp(6)
   current_period_end                                       DateTime     @db.Timestamp(6)
   price                                                    String
-  applicants                                               applicants[]
-  applicants_subscriptions_applicant_stripe_idToapplicants applicants   @relation("subscriptions_applicant_stripe_idToapplicants", fields: [applicant_stripe_id], references: [stripe_id], onDelete: NoAction, onUpdate: NoAction, map: "stripe id fkey")
+  applicants_applicants_subscriptionTosubscriptions        applicants[] @relation("applicants_subscriptionTosubscriptions")
+  applicants_subscriptions_applicant_stripe_idToapplicants applicants   @relation("subscriptions_applicant_stripe_idToapplicants", fields: [applicant_stripe_id], references: [stripe_id], onDelete: NoAction, onUpdate: NoAction, map: "customer stripe id fkey")
   prices                                                   prices       @relation(fields: [price], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "price stripe id fkey")
+}
+
+model jobs {
+  id             String         @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  job_board      String         @db.Uuid
+  title          String?
+  recruiter_name String?
+  company        String?
+  unique_id      String         @id
+  icon_url       String?
+  dt_created     DateTime       @default(now()) @db.Time(6)
+  active         Boolean?
+  applications   applications[]
+  job_boards     job_boards     @relation(fields: [job_board], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model runs {
+  id             String       @id(map: "applications_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  dt             DateTime     @default(now()) @db.Timestamp(6)
+  job_board      String       @db.Uuid
+  application    String
+  recruiter_name String?
+  applicant      String
+  type           String
+  input_tokens   Int?
+  output_tokens  Int?
+  success        Boolean
+  s3_url         String?
+  applicants     applicants   @relation(fields: [applicant], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "application_applicant_fkey")
+  applications   applications @relation(fields: [application], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([dt], map: "ts_index_dt")
+}
+
+/// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
+model applications {
+  applicant      String
+  creation_dt    DateTime?  @default(now()) @db.Timetz(6)
+  last_update_dt DateTime?  @default(now()) @db.Timetz(6)
+  status         String     @default("new")
+  job            String
+  id             String     @id(map: "applications_pkey1")
+  applicants     applicants @relation(fields: [applicant], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "applicant_fkey")
+  jobs           jobs       @relation(fields: [job], references: [unique_id], onDelete: NoAction, onUpdate: NoAction, map: "job_fkey")
+  runs           runs[]
+
+  @@index([job], map: "fki_job_fkey")
 }

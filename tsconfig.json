@@ -9,7 +9,7 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"module": "commonjs",
-		"lib": ["es6", "es2020", "ESNext"],
+		"lib": ["es6", "es2020", "ESNext", "DOM"],
 		"allowJs": true,
 		"outDir": "build",
 		"rootDir": ".",

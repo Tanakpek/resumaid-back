@@ -43,7 +43,7 @@ mongoose
     // delete mongo users
     await User.deleteMany({})
     await CV.deleteMany({})
-    await fs.readFile('seed/data/seed_1.json', 'utf8', async (err, data) => {
+    await fs.readFile('seed/1/data/seed_1.json', 'utf8', async (err, data) => {
         const user = JSON.parse(data)
         let cv = user.cv
         cv = await CV.create(cv)

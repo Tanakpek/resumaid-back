@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import Cookies from 'cookies';
 import { UsersController } from '@src/controllers/user/user_controller';
+import { userDataType } from '@src/controllers/user/types';
 dotenv.config();
 
 const usersController = new UsersController();
@@ -18,7 +19,8 @@ export const checkAuth = (req: any, res: Response, next:any) => {
       if (typeof decodedToken === 'string') {
         throw new Error();
       }
-      req['userData'] = { userId: decodedToken.id, email: decodedToken.email, name: decodedToken.name, plan: decodedToken.plan, subscription_status: decodedToken.subscription_status };
+      const userData: userDataType = { userId: decodedToken.id, email: decodedToken.email, name: decodedToken.name, plan: decodedToken.plan, subscription_status: decodedToken.subscription_status };
+      req['userData'] = userData;
       return next()
     }
     catch(e){
@@ -34,8 +36,8 @@ export const checkAuth = (req: any, res: Response, next:any) => {
     if(typeof decodedToken === 'string'){
         throw new Error('Authentication failed!');
     }
-    
-    req['userData'] = { userId: decodedToken.id, email: decodedToken.email, name: decodedToken.name, plan: decodedToken.plan, subscription_status: decodedToken.subscription_status };
+    const userData: userDataType = { userId: decodedToken.id, email: decodedToken.email, name: decodedToken.name, plan: decodedToken.plan, subscription_status: decodedToken.subscription_status };
+    req['userData'] = userData
     // console.log(decodedToken)
     next();
   } catch (err) {

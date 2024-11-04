@@ -45,3 +45,4 @@ interface CVInfo {
     professional_certifications: string[];
 }
 
+

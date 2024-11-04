@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import {prisma} from '@src/utils/services/db'
 
 export class BillingController {
-    private static prisma = new PrismaClient();
+    private static prisma = prisma;
     constructor() {
 
     }

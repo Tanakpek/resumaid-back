@@ -2,6 +2,38 @@ import  mongoose, { Document, Model } from "mongoose";
 
 const { ObjectId } = mongoose.Schema;
 
+const locationSchema = new mongoose.Schema({
+  city: {
+    type: String,
+    required: [true, "city is required"],
+    trim: true,
+    text: true,
+  },
+  country: {
+    type: String,
+    required: [true, "country is required"],
+    trim: true,
+    text: true,
+  },
+  line1: {
+    type: String,
+    default: "",
+    trim: true,
+    text: true,
+  },
+  line2: {
+    type: String,
+    default: "",
+    trim: true,
+    text: true,
+  },
+  postalCode: {
+    type: String,
+    default: "",
+    trim: true,
+    text: true,
+  },
+})
 const userDetailsSchema = new mongoose.Schema(
   {
     name: {
@@ -49,6 +81,11 @@ const userDetailsSchema = new mongoose.Schema(
     phone_number: {
       type: String,
       default: "",
+    },
+    location: {
+      optional: true,
+      type: locationSchema,
+      required: [false, "location is not required"],
     }
   },
   {

@@ -56,9 +56,9 @@ process.on('SIGINT', async () => {
 })
 
 const httpsOptions = {
-    key: fs.readFileSync('./src/utils/services/ssl/cert.pem'),
-    cert: fs.readFileSync('./src/utils/services/ssl/cert.pem')
-  }
+    key: fs.readFileSync('./src/utils/services/ssl/_cert.pem'),
+    cert: fs.readFileSync('./src/utils/services/ssl/_cert.pem')
+}
 
 mongoose
 .connect(process.env.MONGO_URI as string)

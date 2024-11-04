@@ -1,0 +1,369 @@
+{
+  "$ref": "#/definitions/GenerateResumeRequest",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "Education": {
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dates": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "degree": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "dissertation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "gpa": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "institution": {
+          "description": "Institution from which the degree was obtaineda",
+          "type": "string"
+        },
+        "location": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "score": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "thesis": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "institution",
+        "location",
+        "degree",
+        "dissertation",
+        "thesis",
+        "dates",
+        "score",
+        "classification",
+        "gpa"
+      ],
+      "type": "object"
+    },
+    "GenerateResumeRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "additionalProperties": false,
+          "properties": {
+            "company": {
+              "type": "string"
+            },
+            "cv": {
+              "$ref": "#/definitions/JobCV"
+            },
+            "description": {
+              "type": "string"
+            },
+            "job_board": {
+              "type": "string"
+            },
+            "job_id": {
+              "type": "string"
+            },
+            "job_scraping_page": {
+              "type": "string"
+            },
+            "job_title": {
+              "type": "string"
+            },
+            "recruiter": {
+              "type": "string"
+            },
+            "special_instructions": {
+              "type": "string"
+            },
+            "user_id": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "company",
+            "description",
+            "job_board",
+            "job_id",
+            "job_title",
+            "recruiter",
+            "job_scraping_page",
+            "special_instructions",
+            "cv",
+            "user_id"
+          ],
+          "type": "object"
+        },
+        "style": {
+          "const": 0,
+          "type": "number"
+        },
+        "userData": {
+          "additionalProperties": false,
+          "properties": {
+            "email": {
+              "type": "string"
+            },
+            "github": {
+              "type": "string"
+            },
+            "linkedin": {
+              "type": "string"
+            },
+            "location": {
+              "additionalProperties": false,
+              "properties": {
+                "city": {
+                  "type": "string"
+                },
+                "country_code": {
+                  "type": "string"
+                },
+                "line1": {
+                  "type": "string"
+                },
+                "line2": {
+                  "type": "string"
+                },
+                "postal_code": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "city",
+                "state"
+              ],
+              "type": "object"
+            },
+            "phone": {
+              "type": "string"
+            },
+            "website": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "email"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "data",
+        "style",
+        "userData"
+      ],
+      "type": "object"
+    },
+    "JobCV": {
+      "additionalProperties": false,
+      "properties": {
+        "achievements_and_awards": {
+          "description": "Achievements and awards of the applicant",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "description": {
+          "description": "Description of the applicant",
+          "type": "string"
+        },
+        "education": {
+          "description": "education history of an applicant",
+          "items": {
+            "$ref": "#/definitions/Education"
+          },
+          "type": "array"
+        },
+        "languages": {
+          "description": "Languages spoken by the applicant",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "name": {
+          "description": "Name of the applicant",
+          "type": "string"
+        },
+        "professional_certifications": {
+          "description": "Professional certifications of the applicant",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "projects": {
+          "additionalProperties": {
+            "$ref": "#/definitions/Project"
+          },
+          "description": "Projects of the applicant keyed by project name",
+          "type": "object"
+        },
+        "skills": {
+          "description": "Skills of the applicant",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "title": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "volunteer": {
+          "description": "Volunteer experience of the applicant keyed by position at organization",
+          "items": {
+            "$ref": "#/definitions/Volunteer"
+          },
+          "type": "array"
+        },
+        "work": {
+          "additionalProperties": {
+            "items": {
+              "$ref": "#/definitions/WorkExperience"
+            },
+            "type": "array"
+          },
+          "description": "Roles of the applicant keyed by company name to roles in the company",
+          "type": "object"
+        }
+      },
+      "required": [
+        "name",
+        "title",
+        "education",
+        "achievements_and_awards",
+        "description",
+        "projects",
+        "volunteer",
+        "work",
+        "skills",
+        "languages",
+        "professional_certifications"
+      ],
+      "type": "object"
+    },
+    "Project": {
+      "additionalProperties": false,
+      "properties": {
+        "takeaways": {
+          "items": {
+            "$ref": "#/definitions/Takeaway"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "takeaways"
+      ],
+      "type": "object"
+    },
+    "Takeaway": {
+      "additionalProperties": false,
+      "properties": {
+        "desc": {
+          "type": "string"
+        },
+        "rank": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "desc",
+        "rank"
+      ],
+      "type": "object"
+    },
+    "Volunteer": {
+      "additionalProperties": false,
+      "properties": {
+        "dates": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "organization_name": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "takeaways": {
+          "items": {
+            "$ref": "#/definitions/Takeaway"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "organization_name",
+        "role",
+        "takeaways",
+        "dates"
+      ],
+      "type": "object"
+    },
+    "WorkExperience": {
+      "additionalProperties": false,
+      "properties": {
+        "dates": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "role": {
+          "type": "string"
+        },
+        "takeaways": {
+          "items": {
+            "$ref": "#/definitions/Takeaway"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "role",
+        "dates",
+        "takeaways"
+      ],
+      "type": "object"
+    }
+  }
+}

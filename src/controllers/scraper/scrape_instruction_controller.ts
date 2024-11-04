@@ -1,9 +1,8 @@
 // import { PrismaClient } from "@prisma/client";
-import { PrismaClient } from "@prisma/client";
 import { ScrapingPage } from "@src/models/scraping/scraping_instructions";
-
+import { prisma } from '@src/utils/services/db'
 export class ScrapeInstructionsController {
-    private prisma = new PrismaClient()
+    private prisma = prisma;
     constructor() {
         const a  = this.prisma.job_scraping_pages.findFirst();
     }

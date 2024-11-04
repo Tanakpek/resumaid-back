@@ -1,0 +1,179 @@
+{
+    "style": 0,
+    "cv": {
+        "company": "",
+        "description": "",
+        "job_board": "62b5b14c-9609-496f-b2e8-ed5a111b23f4",
+        "job_id": "4049577673",
+        "job_scraping_page": "cfed86ad-e080-457c-bbbd-4a7fff6e1fc9",
+        "job_title": "",
+        "recruiter": "",
+        "special_instructions": null,
+        "name": "Tan Akpek",
+        "cv": {
+            "name": "Tan Akpek",
+            "title": null,
+            "education": [
+                {
+                    "institution": "Le Wagon",
+                    "location": "Barcelona, Spain",
+                    "degree": "Full Stack Web Development Bootcamp",
+                    "dissertation": null,
+                    "thesis": null,
+                    "dates": [
+                        "July 2022",
+                        "September 2022"
+                    ],
+                    "score": null,
+                    "classification": null,
+                    "gpa": null
+                }
+            ],
+            "achievements_and_awards": [],
+            "description": "",
+            "projects": {
+                "Clonebook": {
+                    "takeaways": [
+                        {
+                            "desc": "Utilized Docker Compose for defining and building a multi-container application, deploying it on Amazon ECS.",
+                            "rank": 3
+                        },
+                        {
+                            "desc": "Centralized state management in React and Node applications using Redux.",
+                            "rank": 5
+                        },
+                        {
+                            "desc": "Architected and implemented an MVC structure with Node.js, integrating MongoDB via Mongoose.js and managing authentication with JWTs.",
+                            "rank": 4
+                        }
+                    ]
+                },
+                "Wearables": {
+                    "takeaways": [
+                        {
+                            "desc": "Led a team of three developers in an agile setting, utilizing Trello, Slack, and GitHub for project management, and designed UI wireframes with Figma.",
+                            "rank": 10
+                        },
+                        {
+                            "desc": "Developed an MVC model using Ruby on Rails, integrating APIs like Stripe and MapBox, and employed AJAX for dynamic content updates.",
+                            "rank": 6
+                        },
+                        {
+                            "desc": "Implemented backend CRUD operations and additional features using Active Record ORM and PostgreSQL.",
+                            "rank": 7
+                        },
+                        {
+                            "desc": "Established a CI/CD pipeline with RSpec and GitHub Actions for Heroku deployments, including unit testing.",
+                            "rank": 8
+                        }
+                    ]
+                },
+                "Ether Lottery": {
+                    "takeaways": [
+                        {
+                            "desc": "Self-learned Solidity for smart contract development, deploying contracts on the Görli testnet using Truffle.",
+                            "rank": 1
+                        },
+                        {
+                            "desc": "Utilized the web3.js library to facilitate blockchain interactions, enabling data transactions on Ethereum.",
+                            "rank": 2
+                        },
+                        {
+                            "desc": "Integrated Chainlink oracles with smart contracts to incorporate non-deterministic processes.",
+                            "rank": 9
+                        }
+                    ]
+                }
+            },
+            "volunteer": [
+                {
+                    "organization_name": "Code for America",
+                    "role": "Volunteer",
+                    "takeaways": [
+                        {
+                            "desc": "Contributed to the development and maintenance of open-source software for local government projects.",
+                            "rank": 11
+                        }
+                    ],
+                    "dates": [
+                        "January 2023",
+                        "PRESENT"
+                    ]
+                }
+            ],
+            "work": {
+                "Beije": [
+                    {
+                        "role": "Frontend Developer",
+                        "dates": [
+                            "September 2022",
+                            "January 2023"
+                        ],
+                        "takeaways": [
+                            {
+                                "desc": "Collaborated in an Agile team to develop new website features for over 30,000 users, using data-driven insights from A/B testing and Google Analytics.",
+                                "rank": 12
+                            },
+                            {
+                                "desc": "Created internal tools like KPI dashboards and automated workflows for the marketing team using Zapier.",
+                                "rank": 13
+                            },
+                            {
+                                "desc": "Enhanced codebase by promoting reusable and readable component lifecycle practices.",
+                                "rank": 14
+                            },
+                            {
+                                "desc": "Improved testing efficiency by 30% through concise unit tests and effective debugging.",
+                                "rank": 15
+                            }
+                        ]
+                    }
+                ],
+                "Ernst and Young": [
+                    {
+                        "role": "Transaction Advisory Services Intern",
+                        "dates": [
+                            "June 2020",
+                            "August 2020"
+                        ],
+                        "takeaways": [
+                            {
+                                "desc": "Collaborated on a $344 million real estate project, focusing on cash flow analysis.",
+                                "rank": 16
+                            },
+                            {
+                                "desc": "Identified and integrated government subsidies, saving $610K in project repayments.",
+                                "rank": 17
+                            }
+                        ]
+                    }
+                ]
+            },
+            "skills": [
+                "Ruby on Rails",
+                "React.js",
+                "Node.js",
+                "MongoDB",
+                "SQL",
+                "Docker",
+                "Python",
+                "HTML/CSS",
+                "Git",
+                "Solidity",
+                "Google Cloud Platform",
+                "Ansible"
+            ],
+            "languages": [
+                "English",
+                "French (Intermediate)",
+                "Turkish"
+            ],
+            "professional_certifications": [
+                "Google Cloud Associate Cloud Engineer",
+                "Certified Solidity Developer"
+            ]
+        },
+        "user_id": "667db49f25df5cdd69e98870",
+        "job": "Job Title: \\nCompany: \\nRecruiter Name: Information Not Available\\nJob Description: \\n"
+    }
+}

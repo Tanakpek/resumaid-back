@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const TakeawaySchema = new Schema({
     immutable: { type: Boolean, default: true },
     value: { type: String, required: true },
-    in: { type: Boolean, required: true ,default: true }
+    sel: { type: Boolean, required: true ,default: true }
 });
 
 const EducationSchema = new Schema({
