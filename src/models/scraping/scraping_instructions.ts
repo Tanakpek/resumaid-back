@@ -13,6 +13,7 @@ export interface ScrapingPage {
 
 export interface ScrapingInstructions {
     company: string,
+    company_logo: string,
     description: string,
     job_board: string,
     job_id: string,

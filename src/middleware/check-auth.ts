@@ -13,7 +13,6 @@ const usersController = new UsersController();
 
 export const checkAuth = (req: any, res: Response, next:any) => {
   try {
-    // console.log('here')
     try{
       const decodedToken: string | JwtPayload = jwt.verify(req.cookies.token, process.env.JWT_SECRET as string);
       if (typeof decodedToken === 'string') {

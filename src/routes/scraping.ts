@@ -54,7 +54,7 @@ router.post('/resume/',[
         const cv = user.cv;
         const body = req.body;
 
-        
+        console.log(body)
         const prep:any = { ...req.body, cv }
         prep.user_id = req.userData.userId
         let job_string = ''
@@ -72,6 +72,7 @@ router.post('/resume/',[
             title: body.job_title,
             recruiter_name: body.recruiter,
             active: true,
+            icon_url: body.company_logo
         };
         if (! (process.env.TESTING === 'true')) {
             await fs.readFile('seed/1/data/seed_1.json', 'utf8', async (err, data) => {

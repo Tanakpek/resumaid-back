@@ -34,25 +34,6 @@ export class RunsController {
             delete insert_run.application
             const applicant = insert_run.applicant
             delete insert_run.applicant
-            // const a = await prisma.runs.create({
-            //     data: {
-            //         ...insert_run, 
-            //         jobs : {
-            //             connectOrCreate:{
-            //                 where: {
-            //                     unique_id: job.unique_id
-            //                 },
-            //                 create: job
-            //             }
-            //         },
-            //         applicants: {
-            //             connect : {
-            //                 id: applicant
-            //             }
-            //         }
-            //     }
-                
-            // })
 
             const a = await prisma.runs.create({
                 data: {
@@ -75,7 +56,7 @@ export class RunsController {
                                         where: {
                                             unique_id: job.unique_id
                                         },
-                                        create: job
+                                        create: {job, creation_dt: new Date().toISOString()}
                                     }
                                 }
                             }
@@ -87,8 +68,16 @@ export class RunsController {
                         }
                     }
                 }
-
             })
+            await prisma.applications.update({
+                where: {
+                    id: applicant + '@' + job.unique_id
+                },
+                data: {
+                    last_update_dt: new Date().toISOString()
+                }
+            })
+
         }
         catch (e) {
             console.log(e);

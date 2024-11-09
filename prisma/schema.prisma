@@ -123,11 +123,11 @@ model runs {
 /// This model has constraints using non-default deferring rules and requires additional setup for migrations. Visit https://pris.ly/d/constraint-deferring for more info.
 model applications {
   applicant      String
-  creation_dt    DateTime?  @default(now()) @db.Timetz(6)
-  last_update_dt DateTime?  @default(now()) @db.Timetz(6)
   status         String     @default("new")
   job            String
   id             String     @id(map: "applications_pkey1")
+  creation_dt    DateTime   @default(now()) @db.Timestamp(6)
+  last_update_dt DateTime   @default(now()) @db.Timestamp(6)
   applicants     applicants @relation(fields: [applicant], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "applicant_fkey")
   jobs           jobs       @relation(fields: [job], references: [unique_id], onDelete: NoAction, onUpdate: NoAction, map: "job_fkey")
   runs           runs[]

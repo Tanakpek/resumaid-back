@@ -9,6 +9,7 @@ import UserRoutes from "@src/routes/users";
 import {loginRoutes, logoutRoutues} from "@src/routes/auth";
 import { WebhookRouter } from "@src/routes/stripe_webhook";
 import { billingRouter, billingPublicRouter } from "@src/routes/billing";
+import { applicationsRouter } from "@src/routes/applications";
 import scrapeInstructionsRoutes from "@src/routes/scraping"
 import mongoose from "mongoose";
 import {checkAuth} from "@src/middleware/check-auth";
@@ -49,6 +50,7 @@ app.use(checkAuth);
 app.use('/billing', billingRouter)
 app.use('/scraping', scrapeInstructionsRoutes )
 app.use('/users', UserRoutes );
+app.use('/applications', applicationsRouter)
 
 process.on('SIGINT', async () => {
     // await client.$disconnect();
